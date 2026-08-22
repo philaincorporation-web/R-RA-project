@@ -1,0 +1,227 @@
+{
+  "meta": {
+    "siteName": "RÈRA",
+    "tagline": "Votre escapade commence ici.",
+    "defaultTitle": "RÈRA — Pointe Denis, Gabon",
+    "defaultDescription": "RÈRA est la plateforme digitale premium dédiée à la découverte de Pointe Denis : séjours, hébergements, activités et expériences au cœur du Gabon."
+  },
+  "nav": {
+    "discover": "Découvrir",
+    "stays": "Séjours",
+    "activities": "Activités",
+    "business": "RÈRA Business",
+    "about": "À propos",
+    "book": "Réserver"
+  },
+  "hero": {
+    "eyebrow": "Pointe Denis · Gabon",
+    "title": "Découvrez Pointe Denis autrement.",
+    "subtitle": "Une destination entre océan, nature, histoire et expériences uniques au cœur du Gabon.",
+    "ctaPrimary": "Explorer Pointe Denis",
+    "ctaSecondary": "Réserver maintenant",
+    "scroll": "Défiler"
+  },
+  "why": {
+    "eyebrow": "Pourquoi Pointe Denis",
+    "title": "Une presqu'île entre océan Atlantique et forêt équatoriale",
+    "subtitle": "À quelques minutes de Libreville en bateau, Pointe Denis offre un condensé rare du Gabon authentique.",
+    "items": [
+      {
+        "title": "Plages sauvages",
+        "text": "Des kilomètres de sable fin bordés par l'océan Atlantique, loin de l'agitation urbaine."
+      },
+      {
+        "title": "Nature préservée",
+        "text": "Forêt équatoriale, mangroves et faune locale à portée de regard."
+      },
+      {
+        "title": "Patrimoine vivant",
+        "text": "L'histoire du Roi Denis et du peuple Mpongwè, racontée avec authenticité."
+      },
+      {
+        "title": "Expériences premium",
+        "text": "Hébergements soignés, activités nautiques et service haut de gamme."
+      }
+    ]
+  },
+  "packages": {
+    "eyebrow": "Séjours",
+    "title": "Packages populaires",
+    "subtitle": "Des formules pensées pour chaque type de voyageur, du week-end détente au séminaire d'entreprise.",
+    "viewAll": "Voir tous les packages",
+    "from": "à partir de",
+    "days": "jours",
+    "nights": "nuitées",
+    "custom": "Sur mesure",
+    "cta": "Voir le détail",
+    "bookCta": "Réserver ce package"
+  },
+  "activities": {
+    "eyebrow": "Expériences",
+    "title": "Activités & expériences",
+    "subtitle": "Jet-ski, safari, navigation privative... vivez Pointe Denis pleinement.",
+    "viewAll": "Voir toutes les activités",
+    "duration": "Durée",
+    "availability": "Disponibilité",
+    "cta": "Découvrir"
+  },
+  "accommodation": {
+    "eyebrow": "Hébergements",
+    "title": "Où séjourner à Pointe Denis",
+    "subtitle": "Des adresses sélectionnées pour leur confort, leur charme et leur vue imprenable.",
+    "viewAll": "Voir tous les hébergements",
+    "capacity": "Capacité",
+    "perNight": "/ nuit",
+    "cta": "Réserver"
+  },
+  "history": {
+    "eyebrow": "Histoire & Patrimoine",
+    "title": "Sur les traces du Roi Denis",
+    "subtitle": "Pointe Denis tire son nom du Roi Denis, figure emblématique du peuple Mpongwè et de l'histoire du Gabon.",
+    "readMore": "Découvrir l'histoire complète",
+    "timeline": [
+      {
+        "year": "XIXe siècle",
+        "title": "Le règne du Roi Denis",
+        "text": "Le Roi Denis (Antchouwé Kowe Rapontchombo) marque l'histoire de l'estuaire du Gabon par son influence politique et commerciale."
+      },
+      {
+        "year": "Culture Mpongwè",
+        "title": "Un peuple, une identité",
+        "text": "Le peuple Mpongwè façonne depuis des générations l'identité culturelle de l'estuaire du Gabon, entre tradition orale, pêche et artisanat."
+      },
+      {
+        "year": "Aujourd'hui",
+        "title": "Un patrimoine à préserver",
+        "text": "RÈRA s'engage à valoriser et transmettre cette mémoire vivante aux visiteurs, avec respect et exactitude."
+      }
+    ]
+  },
+  "gallery": {
+    "eyebrow": "Galerie",
+    "title": "Pointe Denis en images",
+    "subtitle": "Un aperçu immersif de la destination."
+  },
+  "business": {
+    "eyebrow": "RÈRA Business",
+    "title": "Organisez votre événement d'entreprise à Pointe Denis",
+    "subtitle": "Séminaires, forums, team building, événements privés : une organisation sur mesure, dans un cadre exceptionnel.",
+    "services": [
+      { "title": "Séminaires", "text": "Espaces équipés pour vos sessions de travail en pleine nature." },
+      { "title": "Forums & conférences", "text": "Accueil de grands groupes avec logistique complète." },
+      { "title": "Team building", "text": "Activités collectives sur mesure pour souder vos équipes." },
+      { "title": "Événements privés", "text": "Privatisation de sites pour vos réceptions et célébrations." },
+      { "title": "Restauration", "text": "Offre traiteur adaptée à chaque format d'événement." },
+      { "title": "Hébergement groupe", "text": "Solutions d'hébergement pour délégations et équipes." }
+    ],
+    "cta": "Organiser un événement",
+    "formTitle": "Demander un devis Business",
+    "formSubtitle": "Décrivez votre projet, notre équipe RÈRA Business vous répond sous 48h."
+  },
+  "testimonials": {
+    "eyebrow": "Avis",
+    "title": "Ce qu'en disent nos voyageurs"
+  },
+  "map": {
+    "eyebrow": "Accès",
+    "title": "Comment venir à Pointe Denis",
+    "subtitle": "Départ en navette maritime depuis Libreville, traversée d'environ 30 minutes.",
+    "cta": "Voir les infos pratiques"
+  },
+  "finalCta": {
+    "title": "Prêt à vivre l'expérience RÈRA ?",
+    "subtitle": "Réservez votre séjour à Pointe Denis dès aujourd'hui.",
+    "cta": "Réserver maintenant"
+  },
+  "footer": {
+    "description": "RÈRA est la plateforme digitale premium dédiée à la découverte de Pointe Denis, Gabon.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "legal": "Légal",
+    "legalMentions": "Mentions légales",
+    "privacy": "Confidentialité",
+    "terms": "Conditions générales",
+    "language": "Langue",
+    "theme": "Thème",
+    "rights": "Tous droits réservés."
+  },
+  "pages": {
+    "discover": {
+      "title": "Découvrir Pointe Denis",
+      "subtitle": "Une presqu'île d'exception aux portes de Libreville."
+    },
+    "history": {
+      "title": "Histoire & Patrimoine",
+      "subtitle": "Le Roi Denis, le peuple Mpongwè et la mémoire de l'estuaire du Gabon."
+    },
+    "packages": {
+      "title": "Nos packages",
+      "subtitle": "Choisissez la formule adaptée à votre séjour."
+    },
+    "accommodation": {
+      "title": "Hébergements",
+      "subtitle": "Un confort premium au cœur de la nature."
+    },
+    "activities": {
+      "title": "Activités",
+      "subtitle": "Vivez Pointe Denis à travers des expériences uniques."
+    },
+    "business": {
+      "title": "RÈRA Business",
+      "subtitle": "L'excellence événementielle à Pointe Denis."
+    },
+    "booking": {
+      "title": "Réservation",
+      "subtitle": "Finalisez votre séjour en quelques étapes."
+    },
+    "practicalInfo": {
+      "title": "Informations pratiques",
+      "subtitle": "Tout ce qu'il faut savoir avant de partir."
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "Une question ? Notre équipe vous répond rapidement."
+    }
+  },
+  "booking": {
+    "steps": {
+      "offer": "Offre",
+      "date": "Date",
+      "travelers": "Voyageurs",
+      "options": "Options",
+      "summary": "Récapitulatif",
+      "contact": "Coordonnées",
+      "payment": "Paiement",
+      "confirmation": "Confirmation"
+    },
+    "labels": {
+      "chooseOffer": "Choisissez votre offre",
+      "chooseDate": "Choisissez votre date",
+      "adults": "Adultes",
+      "children": "Enfants",
+      "additionalOptions": "Options additionnelles",
+      "fullName": "Nom complet",
+      "email": "Email",
+      "phone": "Téléphone",
+      "country": "Pays de résidence",
+      "notes": "Notes complémentaires",
+      "totalEstimate": "Total estimé",
+      "next": "Continuer",
+      "back": "Retour",
+      "confirm": "Confirmer la réservation",
+      "submitting": "Envoi en cours...",
+      "successTitle": "Réservation envoyée !",
+      "successText": "Merci ! Votre demande de réservation a bien été transmise. Notre équipe vous contactera très prochainement pour finaliser les détails et le paiement.",
+      "newBooking": "Faire une nouvelle réservation"
+    }
+  },
+  "common": {
+    "readMore": "En savoir plus",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue. Merci de réessayer.",
+    "currency": "FCFA",
+    "required": "Ce champ est requis",
+    "send": "Envoyer",
+    "close": "Fermer"
+  }
+}

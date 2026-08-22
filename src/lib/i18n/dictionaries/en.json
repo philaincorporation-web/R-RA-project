@@ -1,0 +1,227 @@
+{
+  "meta": {
+    "siteName": "RÈRA",
+    "tagline": "Your escape starts here.",
+    "defaultTitle": "RÈRA — Pointe Denis, Gabon",
+    "defaultDescription": "RÈRA is the premium digital platform dedicated to discovering Pointe Denis: stays, accommodation, activities and experiences at the heart of Gabon."
+  },
+  "nav": {
+    "discover": "Discover",
+    "stays": "Stays",
+    "activities": "Activities",
+    "business": "RÈRA Business",
+    "about": "About",
+    "book": "Book now"
+  },
+  "hero": {
+    "eyebrow": "Pointe Denis · Gabon",
+    "title": "Discover Pointe Denis, differently.",
+    "subtitle": "A destination between ocean, nature, history and unique experiences at the heart of Gabon.",
+    "ctaPrimary": "Explore Pointe Denis",
+    "ctaSecondary": "Book now",
+    "scroll": "Scroll"
+  },
+  "why": {
+    "eyebrow": "Why Pointe Denis",
+    "title": "A peninsula between the Atlantic Ocean and equatorial forest",
+    "subtitle": "Just minutes from Libreville by boat, Pointe Denis offers a rare concentration of authentic Gabon.",
+    "items": [
+      {
+        "title": "Wild beaches",
+        "text": "Miles of fine sand bordered by the Atlantic Ocean, far from the city buzz."
+      },
+      {
+        "title": "Pristine nature",
+        "text": "Equatorial forest, mangroves and local wildlife within reach."
+      },
+      {
+        "title": "Living heritage",
+        "text": "The history of King Denis and the Mpongwè people, told with authenticity."
+      },
+      {
+        "title": "Premium experiences",
+        "text": "Curated accommodation, water activities and high-end service."
+      }
+    ]
+  },
+  "packages": {
+    "eyebrow": "Stays",
+    "title": "Popular packages",
+    "subtitle": "Formulas designed for every kind of traveler, from a relaxing weekend to a corporate seminar.",
+    "viewAll": "View all packages",
+    "from": "from",
+    "days": "days",
+    "nights": "nights",
+    "custom": "Custom",
+    "cta": "See details",
+    "bookCta": "Book this package"
+  },
+  "activities": {
+    "eyebrow": "Experiences",
+    "title": "Activities & experiences",
+    "subtitle": "Jet-ski, safari, private boating... live Pointe Denis to the fullest.",
+    "viewAll": "View all activities",
+    "duration": "Duration",
+    "availability": "Availability",
+    "cta": "Discover"
+  },
+  "accommodation": {
+    "eyebrow": "Accommodation",
+    "title": "Where to stay in Pointe Denis",
+    "subtitle": "Handpicked addresses for their comfort, charm and breathtaking views.",
+    "viewAll": "View all accommodation",
+    "capacity": "Capacity",
+    "perNight": "/ night",
+    "cta": "Book"
+  },
+  "history": {
+    "eyebrow": "History & Heritage",
+    "title": "In the footsteps of King Denis",
+    "subtitle": "Pointe Denis takes its name from King Denis, an emblematic figure of the Mpongwè people and Gabon's history.",
+    "readMore": "Discover the full story",
+    "timeline": [
+      {
+        "year": "19th century",
+        "title": "The reign of King Denis",
+        "text": "King Denis (Antchouwé Kowe Rapontchombo) marked the history of the Gabon estuary through his political and trade influence."
+      },
+      {
+        "year": "Mpongwè culture",
+        "title": "A people, an identity",
+        "text": "For generations, the Mpongwè people have shaped the cultural identity of the Gabon estuary, between oral tradition, fishing and craftsmanship."
+      },
+      {
+        "year": "Today",
+        "title": "A heritage to preserve",
+        "text": "RÈRA is committed to promoting and passing on this living memory to visitors, with respect and accuracy."
+      }
+    ]
+  },
+  "gallery": {
+    "eyebrow": "Gallery",
+    "title": "Pointe Denis in pictures",
+    "subtitle": "An immersive glimpse of the destination."
+  },
+  "business": {
+    "eyebrow": "RÈRA Business",
+    "title": "Host your corporate event in Pointe Denis",
+    "subtitle": "Seminars, forums, team building, private events: tailor-made organization in an exceptional setting.",
+    "services": [
+      { "title": "Seminars", "text": "Equipped spaces for your work sessions surrounded by nature." },
+      { "title": "Forums & conferences", "text": "Hosting large groups with full logistics." },
+      { "title": "Team building", "text": "Tailor-made group activities to strengthen your teams." },
+      { "title": "Private events", "text": "Site privatization for your receptions and celebrations." },
+      { "title": "Catering", "text": "Catering offer adapted to every event format." },
+      { "title": "Group accommodation", "text": "Accommodation solutions for delegations and teams." }
+    ],
+    "cta": "Plan an event",
+    "formTitle": "Request a Business quote",
+    "formSubtitle": "Describe your project, our RÈRA Business team will get back to you within 48h."
+  },
+  "testimonials": {
+    "eyebrow": "Reviews",
+    "title": "What our travelers say"
+  },
+  "map": {
+    "eyebrow": "Access",
+    "title": "How to get to Pointe Denis",
+    "subtitle": "Departure by boat shuttle from Libreville, about a 30-minute crossing.",
+    "cta": "See practical information"
+  },
+  "finalCta": {
+    "title": "Ready to live the RÈRA experience?",
+    "subtitle": "Book your stay in Pointe Denis today.",
+    "cta": "Book now"
+  },
+  "footer": {
+    "description": "RÈRA is the premium digital platform dedicated to discovering Pointe Denis, Gabon.",
+    "navigation": "Navigation",
+    "contact": "Contact",
+    "legal": "Legal",
+    "legalMentions": "Legal notice",
+    "privacy": "Privacy",
+    "terms": "Terms & conditions",
+    "language": "Language",
+    "theme": "Theme",
+    "rights": "All rights reserved."
+  },
+  "pages": {
+    "discover": {
+      "title": "Discover Pointe Denis",
+      "subtitle": "An exceptional peninsula at the gates of Libreville."
+    },
+    "history": {
+      "title": "History & Heritage",
+      "subtitle": "King Denis, the Mpongwè people and the memory of the Gabon estuary."
+    },
+    "packages": {
+      "title": "Our packages",
+      "subtitle": "Choose the formula that fits your stay."
+    },
+    "accommodation": {
+      "title": "Accommodation",
+      "subtitle": "Premium comfort at the heart of nature."
+    },
+    "activities": {
+      "title": "Activities",
+      "subtitle": "Live Pointe Denis through unique experiences."
+    },
+    "business": {
+      "title": "RÈRA Business",
+      "subtitle": "Event excellence in Pointe Denis."
+    },
+    "booking": {
+      "title": "Booking",
+      "subtitle": "Finalize your stay in a few steps."
+    },
+    "practicalInfo": {
+      "title": "Practical information",
+      "subtitle": "Everything you need to know before you go."
+    },
+    "contact": {
+      "title": "Contact",
+      "subtitle": "A question? Our team responds quickly."
+    }
+  },
+  "booking": {
+    "steps": {
+      "offer": "Offer",
+      "date": "Date",
+      "travelers": "Travelers",
+      "options": "Options",
+      "summary": "Summary",
+      "contact": "Contact",
+      "payment": "Payment",
+      "confirmation": "Confirmation"
+    },
+    "labels": {
+      "chooseOffer": "Choose your offer",
+      "chooseDate": "Choose your date",
+      "adults": "Adults",
+      "children": "Children",
+      "additionalOptions": "Additional options",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "country": "Country of residence",
+      "notes": "Additional notes",
+      "totalEstimate": "Estimated total",
+      "next": "Continue",
+      "back": "Back",
+      "confirm": "Confirm booking",
+      "submitting": "Submitting...",
+      "successTitle": "Booking sent!",
+      "successText": "Thank you! Your booking request has been sent. Our team will contact you shortly to finalize the details and payment.",
+      "newBooking": "Make a new booking"
+    }
+  },
+  "common": {
+    "readMore": "Read more",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again.",
+    "currency": "XAF",
+    "required": "This field is required",
+    "send": "Send",
+    "close": "Close"
+  }
+}

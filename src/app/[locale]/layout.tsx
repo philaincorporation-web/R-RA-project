@@ -1,0 +1,69 @@
+import type { ReactNode } from "react";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { isValidLocale, locales, type AppLocale } from "@/lib/i18n/config";
+import { getDictionary } from "@/lib/i18n/get-dictionary";
+import { Navbar } from "@/components/navigation/navbar";
+import { Footer } from "@/components/layout/footer";
+
+export function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const safeLocale: AppLocale = isValidLocale(locale) ? locale : "fr";
+  const dict = await getDictionary(safeLocale);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rera-pointedenis.com";
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: { default: dict.meta.defaultTitle, template: `%s — RÈRA` },
+    description: dict.meta.defaultDescription,
+    alternates: {
+      canonical: `/${safeLocale}`,
+      languages: { fr: "/fr", en: "/en" },
+    },
+    openGraph: {
+      title: dict.meta.defaultTitle,
+      description: dict.meta.defaultDescription,
+      url: `${siteUrl}/${safeLocale}`,
+      siteName: "RÈRA",
+      locale: safeLocale === "fr" ? "fr_FR" : "en_US",
+      type: "website",
+      images: [{ url: "/images/logo.png", width: 1200, height: 1200, alt: "RÈRA — Pointe Denis" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: dict.meta.defaultTitle,
+      description: dict.meta.defaultDescription,
+      images: ["/images/logo.png"],
+    },
+    icons: { icon: "/images/logo.png" },
+  };
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  if (!isValidLocale(locale)) notFound();
+
+  const dict = await getDictionary(locale);
+
+  return (
+    <>
+      <Navbar locale={locale} dict={dict} />
+      <main className="min-h-[60svh]">{children}</main>
+      <Footer locale={locale} dict={dict} />
+    </>
+  );
+}

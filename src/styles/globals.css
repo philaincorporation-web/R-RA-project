@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-poppins: "Poppins", system-ui, sans-serif;
+  --font-inter: "Inter", system-ui, sans-serif;
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-rera-navy-100 dark:border-white/10;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-rera-mist text-rera-navy-900 dark:bg-rera-navy-900 dark:text-rera-mist font-body antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  ::selection {
+    @apply bg-rera-gold-400/40 text-rera-navy-900;
+  }
+}
+
+@layer utilities {
+  .container-rera {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+  }
+
+  .text-gradient-gold {
+    @apply bg-rera-gold-gradient bg-clip-text text-transparent;
+  }
+
+  .card-surface {
+    @apply bg-white/90 dark:bg-rera-navy-800/70 backdrop-blur-sm border border-rera-navy-100/60 dark:border-white/10;
+  }
+
+  .shimmer-bg {
+    background: linear-gradient(90deg, transparent, rgba(245, 203, 106, 0.18), transparent);
+    background-size: 200% 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
