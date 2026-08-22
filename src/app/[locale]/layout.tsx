@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { getSiteUrl } from "@/lib/utils/site-url";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { isValidLocale, locales, type AppLocale } from "@/lib/i18n/config";
@@ -18,7 +19,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const safeLocale: AppLocale = isValidLocale(locale) ? locale : "fr";
   const dict = await getDictionary(safeLocale);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rera-pointedenis.com";
+const siteUrl = getSiteUrl();
 
   return {
     metadataBase: new URL(siteUrl),

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { getSiteUrl } from "@/lib/utils/site-url";
 import { locales } from "@/lib/i18n/config";
 import { getAccommodations, getActivities, getPackages } from "@/lib/sheetdb/queries";
 
@@ -16,7 +17,7 @@ const staticRoutes = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rera-pointedenis.com";
+const siteUrl = getSiteUrl();
   const [packages, activities, accommodations] = await Promise.all([
     getPackages(),
     getActivities(),
