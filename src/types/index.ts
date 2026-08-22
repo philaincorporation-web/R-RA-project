@@ -30,7 +30,7 @@ export interface Activity {
   currency: string;
   duration: LocalizedText;
   availability: LocalizedText;
-  image: "/savanaBoisson.jpg";
+  image: string;
   category: string;
 }
 
@@ -44,7 +44,7 @@ export interface Accommodation {
   capacity: number;
   amenities: LocalizedText[];
   availability: LocalizedText;
-  image: "/savanaBoisson.jpg";
+  image: string;
 }
 
 export interface Testimonial {

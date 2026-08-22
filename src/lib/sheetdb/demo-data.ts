@@ -98,28 +98,33 @@ export const demoPackages: Package[] = [
       { fr: "Excursion patrimoine & histoire", en: "Heritage & history excursion" },
     ],
   },
-  {
-    id: "pkg-business",
-    slug: "business-forum",
-    image: "/baiedestortue.jpg",
-    name: { fr: "Business & Forum", en: "Business & Forum" },
-    tagline: { fr: "Sur mesure pour votre entreprise", en: "Tailor-made for your company" },
-    description: {
-      fr: "Un format entièrement personnalisé pour vos séminaires, forums et événements d'entreprise à Pointe Denis.",
-      en: "A fully customized format for your seminars, forums and corporate events in Pointe Denis.",
-    },
-    durationDays: 0,
-    nights: 0,
-    price: 0,
-    currency: "XAF",
-    image: "/baiedestortue.jpg",
-    badge: { fr: "Sur mesure", en: "Custom" },
-    inclusions: [
-      { fr: "Logistique complète sur mesure", en: "Fully tailored logistics" },
-      { fr: "Espaces de réunion équipés", en: "Equipped meeting spaces" },
-      { fr: "Restauration & hébergement groupe", en: "Catering & group accommodation" },
-    ],
+ {
+  id: "pkg-business",
+  slug: "business-forum",
+  image: "/baiedestortue.jpg",
+  name: { fr: "Business & Forum", en: "Business & Forum" },
+  tagline: {
+    fr: "Sur mesure pour votre entreprise",
+    en: "Tailor-made for your company",
   },
+  description: {
+    fr: "Un format entièrement personnalisé pour vos séminaires, forums et événements d'entreprise à Pointe Denis.",
+    en: "A fully customized format for your seminars, forums and corporate events in Pointe Denis.",
+  },
+  durationDays: 0,
+  nights: 0,
+  price: 0,
+  currency: "XAF",
+  badge: { fr: "Sur mesure", en: "Custom" },
+  inclusions: [
+    { fr: "Logistique complète sur mesure", en: "Fully tailored logistics" },
+    { fr: "Espaces de réunion équipés", en: "Equipped meeting spaces" },
+    {
+      fr: "Restauration & hébergement groupe",
+      en: "Catering & group accommodation",
+    },
+  ],
+},
 ];
 
 export const demoActivities: Activity[] = [
