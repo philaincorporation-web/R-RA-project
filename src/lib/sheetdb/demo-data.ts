@@ -155,7 +155,7 @@ export const demoActivities: Activity[] = [
     currency: "XAF",
     duration: { fr: "2 heures", en: "2 hours" },
     availability: { fr: "Sur réservation", en: "By reservation" },
-    image: "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200&auto=format&fit=crop",
+    image: "/safari.jpg",
     category: "terrestre",
   },
   {
@@ -170,7 +170,7 @@ export const demoActivities: Activity[] = [
     currency: "XAF",
     duration: { fr: "Demi-journée", en: "Half-day" },
     availability: { fr: "Sur réservation", en: "By reservation" },
-    image: "https://images.unsplash.com/photo-1500627964684-141351970a7f?q=80&w=1200&auto=format&fit=crop",
+    image: "/bateau222.jpg",
     category: "nautique",
   },
   {
@@ -185,7 +185,7 @@ export const demoActivities: Activity[] = [
     currency: "XAF",
     duration: { fr: "30 minutes", en: "30 minutes" },
     availability: { fr: "Départs quotidiens", en: "Daily departures" },
-    image: "https://images.unsplash.com/photo-1544986581-efac024faf62?q=80&w=1200&auto=format&fit=crop",
+    image: "/navette.jpg",
     category: "transport",
   },
   {
@@ -200,7 +200,7 @@ export const demoActivities: Activity[] = [
     currency: "XAF",
     duration: { fr: "Selon la formule", en: "Depends on the formula" },
     availability: { fr: "Tous les jours", en: "Every day" },
-    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=1200&auto=format&fit=crop",
+    image: "/platresto.jpg",
     category: "restauration",
   },
 ];
@@ -275,7 +275,7 @@ export const demoTestimonials: Testimonial[] = [
       fr: "Un séjour parfaitement organisé, une équipe aux petits soins et un cadre à couper le souffle. RÈRA a changé ma vision de Pointe Denis.",
       en: "A perfectly organized stay, an attentive team and a breathtaking setting. RÈRA changed my perspective on Pointe Denis.",
     },
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop",
+    avatar: "/voyageur2.jpg",
     rating: 5,
   },
   {
@@ -286,7 +286,7 @@ export const demoTestimonials: Testimonial[] = [
       fr: "Nous avons organisé notre séminaire annuel avec RÈRA Business : logistique impeccable et cadre inspirant pour nos équipes.",
       en: "We organized our annual seminar with RÈRA Business: flawless logistics and an inspiring setting for our teams.",
     },
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+    avatar: "/voyageurH.jpg",
     rating: 5,
   },
   {
@@ -297,7 +297,7 @@ export const demoTestimonials: Testimonial[] = [
       fr: "La navette, l'hébergement, les activités... tout était fluide. On sent une vraie recherche de qualité dans chaque détail.",
       en: "The shuttle, the accommodation, the activities... everything was seamless. You can feel real attention to quality in every detail.",
     },
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop",
+    avatar: "/voyageur4.jpg",
     rating: 5,
   },
 ];
