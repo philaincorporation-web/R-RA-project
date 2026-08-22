@@ -297,7 +297,7 @@ export const demoTestimonials: Testimonial[] = [
       fr: "La navette, l'hébergement, les activités... tout était fluide. On sent une vraie recherche de qualité dans chaque détail.",
       en: "The shuttle, the accommodation, the activities... everything was seamless. You can feel real attention to quality in every detail.",
     },
-    avatar: "/voyageur4.jpg",
+    avatar: "/images/voyageur2.jpg",
     rating: 5,
   },
 ];
