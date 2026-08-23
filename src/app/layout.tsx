@@ -1,16 +1,9 @@
 import type { ReactNode } from "react";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import NextTopLoader from "nextjs-toploader";
+import { NavigationOverlay } from "@/components/navigation/navigation-overlay";
 
-/**
- * Les polices Poppins (titres) et Inter (corps de texte) sont chargées via
- * Google Fonts en <link> plutôt que via `next/font/google`, afin de ne pas
- * dépendre d'un accès réseau à fonts.googleapis.com au moment du build
- * (utile en environnement CI/sandbox sans sortie réseau). Pour une
- * optimisation maximale en production, vous pouvez migrer vers
- * `next/font/google` (Poppins/Inter) dès que l'environnement de build a
- * accès à Internet — voir README.md.
- */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fr" suppressHydrationWarning>
@@ -23,7 +16,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <NextTopLoader color="#1a0ea0" showSpinner={false} height={3} />
+          <NavigationOverlay />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
