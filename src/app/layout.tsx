@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import NextTopLoader from "nextjs-toploader";
@@ -16,12 +17,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         />
       </head>
       <body>
-        <ThemeProvider>
-          <NextTopLoader color="#1a0ea0" showSpinner={false} height={3} />
-          <NavigationOverlay />
-          {children}
-        </ThemeProvider>
-      </body>
+  <ThemeProvider>
+    <NextTopLoader color="#1a0ea0" showSpinner={false} height={3} />
+    <NavigationOverlay />
+    <ServiceWorkerRegister />   {/* ← nouvelle ligne */}
+    {children}
+  </ThemeProvider>
+</body>
     </html>
   );
 }

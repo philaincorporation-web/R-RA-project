@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { getSiteUrl } from "@/lib/utils/site-url";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
 import { isValidLocale, locales, type AppLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
@@ -10,6 +10,13 @@ import { Footer } from "@/components/layout/footer";
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
+
+export const viewport: Viewport = {
+  themeColor: "#0D2B45",
+  colorScheme: "light dark",
+  width: "device-width",
+  initialScale: 1,
+};
 
 export async function generateMetadata({
   params,
@@ -44,7 +51,18 @@ const siteUrl = getSiteUrl();
       description: dict.meta.defaultDescription,
       images: ["/images/logo.png"],
     },
-    icons: { icon: "/images/logo.png" },
+    icons: {
+  icon: [
+    { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+    { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+  ],
+  apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+},
+appleWebApp: {
+  capable: true,
+  statusBarStyle: "black-translucent",
+  title: "RÈRA",
+},
   };
 }
 
