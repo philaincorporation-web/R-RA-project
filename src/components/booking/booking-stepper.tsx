@@ -3,7 +3,19 @@
 import { useMemo, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, CheckCircle2, ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
+import {
+  Banknote,
+  Building2,
+  Check,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  CreditCard,
+  Lock,
+  Minus,
+  Plus,
+  Smartphone,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { formatPrice, pick } from "@/lib/utils/format";
@@ -26,11 +38,21 @@ interface UnifiedOffer {
 const inputClasses =
   "w-full rounded-lg border border-rera-navy-200 bg-white px-4 py-3 text-sm text-rera-navy-800 placeholder:text-rera-navy-300 focus:border-rera-lagoon-500 focus:outline-none focus:ring-2 focus:ring-rera-lagoon-200 dark:border-white/15 dark:bg-rera-navy-800 dark:text-white dark:placeholder:text-white/30";
 
-const paymentMethods = [
-  { id: "on-site", fr: "Paiement sur place", en: "Pay on site" },
-  { id: "transfer", fr: "Virement bancaire", en: "Bank transfer" },
-  { id: "mobile-money", fr: "Mobile Money", en: "Mobile Money" },
+const paymentMethods: { id: string; fr: string; en: string; logo?: string }[] = [
+  { id: "airtel-money", fr: "Airtel Money", en: "Airtel Money", logo: "/payment-icons/airtelmoney.webp" },
+  { id: "moov-money", fr: "Moov Money", en: "Moov Money", logo: "/payment-icons/moovmoney.webp" },
+  { id: "card", fr: "Carte bancaire", en: "Credit card", logo: "/payment-icons/creditcard.jpg" },
+  { id: "on-site", fr: "Paiement sur place", en: "Pay on site", logo: "/payment-icons/Paiementplace.jpg" },
+  { id: "transfer", fr: "Virement bancaire", en: "Bank transfer", logo: "/payment-icons/bancaire.jpg" },
 ];
+
+const paymentMethodIcons: Record<string, typeof Banknote> = {
+  "on-site": Banknote,
+  transfer: Building2,
+  "airtel-money": Smartphone,
+  "moov-money": Smartphone,
+  card: CreditCard,
+};
 
 const additionalOptions = [
   { id: "private-transfer", fr: "Transfert privatif", en: "Private transfer", price: 25000 },
@@ -94,6 +116,11 @@ export function BookingStepper({
   const [children, setChildren] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].id);
+  const [paymentTouched, setPaymentTouched] = useState(false);
+  const [cardName, setCardName] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvc, setCardCvc] = useState("");
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -236,7 +263,20 @@ export function BookingStepper({
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit}
+        onKeyDown={(e) => {
+          // Empêche la touche Entrée de soumettre prématurément le formulaire
+          // à une étape intermédiaire (ex: en tapant l'email ou le téléphone).
+          // Entrée reste normale dans les <textarea> (retour à la ligne), et
+          // la soumission réelle n'est possible qu'à l'étape 6 (paiement).
+          if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+            if (step < 6) {
+              e.preventDefault();
+            }
+          }
+        }}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={step}
@@ -401,34 +441,205 @@ export function BookingStepper({
             ) : null}
 
             {step === 6 ? (
-              <div className="max-w-md space-y-5">
-                <h3 className="text-lg font-semibold text-rera-navy-800 dark:text-white">
+              <div>
+                <h3 className="mb-5 text-lg font-semibold text-rera-navy-800 dark:text-white">
                   {dict.booking.steps.payment}
                 </h3>
-                <div className="space-y-3">
-                  {paymentMethods.map((method) => (
-                    <button
-                      type="button"
-                      key={method.id}
-                      onClick={() => setPaymentMethod(method.id)}
-                      className={cn(
-                        "flex w-full items-center justify-between rounded-xl2 border p-4 text-left text-sm font-medium transition-all",
-                        paymentMethod === method.id
-                          ? "border-rera-lagoon-500 bg-rera-lagoon-50 dark:bg-white/10"
-                          : "border-rera-navy-100 hover:border-rera-lagoon-300 dark:border-white/10"
-                      )}
-                    >
-                      {locale === "fr" ? method.fr : method.en}
-                      {paymentMethod === method.id ? <Check className="h-4 w-4 text-rera-lagoon-600" /> : null}
-                    </button>
-                  ))}
+
+                <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+                  {/* Colonne gauche : récapitulatif de commande */}
+                  <div className="lg:col-span-2">
+                    <div className="card-surface rounded-xl2 p-5 shadow-premium">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-rera-navy-400 dark:text-rera-mist/50">
+                        {locale === "fr" ? "Votre commande" : "Your order"}
+                      </p>
+
+                      {selectedOffer ? (
+                        <div className="mt-4 flex items-center gap-3 border-b border-rera-navy-100/60 pb-4 dark:border-white/10">
+                          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
+                            <Image
+                              src={selectedOffer.image}
+                              alt={selectedOffer.name}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-rera-navy-800 dark:text-white">
+                              {selectedOffer.name}
+                            </p>
+                            <p className="text-xs text-rera-navy-500 dark:text-rera-mist/60">
+                              {formatPrice(selectedOffer.price, selectedOffer.currency, locale)}
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <dl className="mt-4 space-y-2.5 text-sm">
+                        <SummaryRow label={dict.booking.labels.chooseDate} value={startDate || "—"} />
+                        <SummaryRow label={dict.booking.labels.adults} value={String(adults)} />
+                        <SummaryRow label={dict.booking.labels.children} value={String(children)} />
+                        {selectedOptions.length > 0 ? (
+                          <SummaryRow
+                            label={dict.booking.labels.additionalOptions}
+                            value={String(selectedOptions.length)}
+                          />
+                        ) : null}
+                      </dl>
+
+                      <div className="mt-4 border-t border-rera-navy-100/60 pt-4 dark:border-white/10">
+                        <SummaryRow
+                          label={dict.booking.labels.totalEstimate}
+                          value={formatPrice(total, selectedOffer?.currency ?? "XAF", locale)}
+                          emphasize
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Colonne droite : choix + formulaire de paiement */}
+                  <div className="lg:col-span-3">
+                    <div className="card-surface rounded-xl2 p-5 shadow-premium sm:p-6">
+                      <div className="mb-5 flex items-center gap-2">
+                        <Image
+                          src="/images/logo.png"
+                          alt="RÈRA"
+                          width={28}
+                          height={28}
+                          className="rounded-md"
+                        />
+                        <p className="text-sm font-semibold text-rera-navy-800 dark:text-white">
+                          {locale === "fr" ? "Paiement sécurisé" : "Secure checkout"}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        {paymentMethods.map((method) => {
+                          const Icon = paymentMethodIcons[method.id] ?? CreditCard;
+                          const isActive = paymentMethod === method.id;
+                          return (
+                            <button
+                              type="button"
+                              key={method.id}
+                              onClick={() => {
+                                setPaymentMethod(method.id);
+                                setPaymentTouched(true);
+                              }}
+                              className={cn(
+                                "flex flex-col items-center gap-2 rounded-xl2 border p-3 text-center transition-all",
+                                isActive
+                                  ? "border-rera-lagoon-500 bg-rera-lagoon-50 dark:bg-white/10"
+                                  : "border-rera-navy-100 hover:border-rera-lagoon-300 dark:border-white/10"
+                              )}
+                            >
+                              {method.logo ? (
+                                <div className="relative h-8 w-full">
+                                  <Image
+                                    src={method.logo}
+                                    alt={locale === "fr" ? method.fr : method.en}
+                                    fill
+                                    className="object-contain"
+                                  />
+                                </div>
+                              ) : (
+                                <Icon
+                                  className={cn(
+                                    "h-6 w-6",
+                                    isActive ? "text-rera-lagoon-600" : "text-rera-navy-400 dark:text-rera-mist/50"
+                                  )}
+                                />
+                              )}
+                              <span className="text-[11px] font-medium leading-tight text-rera-navy-700 dark:text-rera-mist">
+                                {locale === "fr" ? method.fr : method.en}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {paymentMethod === "card" ? (
+                        <div className="mt-6 space-y-4">
+                          <div>
+                            <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                              {locale === "fr" ? "Nom du titulaire" : "Cardholder name"}
+                            </label>
+                            <input
+                              value={cardName}
+                              onChange={(e) => setCardName(e.target.value)}
+                              placeholder="RÈRA VOYAGEUR"
+                              className={inputClasses}
+                            />
+                          </div>
+                          <div>
+                            <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                              {locale === "fr" ? "Numéro de carte" : "Card number"}
+                            </label>
+                            <input
+                              value={cardNumber}
+                              onChange={(e) => setCardNumber(e.target.value)}
+                              placeholder="0000 0000 0000 0000"
+                              inputMode="numeric"
+                              className={inputClasses}
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                                {locale === "fr" ? "Expiration" : "Expiration date"}
+                              </label>
+                              <input
+                                value={cardExpiry}
+                                onChange={(e) => setCardExpiry(e.target.value)}
+                                placeholder="MM/AA"
+                                className={inputClasses}
+                              />
+                            </div>
+                            <div>
+                              <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                                CVC
+                              </label>
+                              <input
+                                value={cardCvc}
+                                onChange={(e) => setCardCvc(e.target.value)}
+                                placeholder="123"
+                                inputMode="numeric"
+                                className={inputClasses}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {(paymentMethod === "airtel-money" || paymentMethod === "moov-money") ? (
+                        <div className="mt-6">
+                          <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                            {locale === "fr" ? "Numéro Mobile Money" : "Mobile Money number"}
+                          </label>
+                          <input
+                            value={cardNumber}
+                            onChange={(e) => setCardNumber(e.target.value)}
+                            placeholder="074 00 00 00"
+                            inputMode="tel"
+                            className={inputClasses}
+                          />
+                        </div>
+                      ) : null}
+
+                      <div className="mt-6 flex items-start gap-2 rounded-xl2 bg-rera-gold-50 p-4 text-xs text-rera-navy-600 dark:bg-white/5 dark:text-rera-mist/70">
+                        <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                        <p>
+                          {locale === "fr"
+                            ? "Aucun paiement n'est prélevé maintenant. Notre équipe RÈRA vous contactera pour finaliser le règlement en toute sécurité."
+                            : "No payment is taken now. Our RÈRA team will contact you to securely finalize the payment."}
+                        </p>
+                      </div>
+
+                      {status === "error" ? (
+                        <p className="mt-4 text-sm text-red-500">{dict.common.error}</p>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
-                <p className="rounded-xl2 bg-rera-gold-50 p-4 text-xs text-rera-navy-600 dark:bg-white/5 dark:text-rera-mist/70">
-                  {locale === "fr"
-                    ? "Aucun paiement n'est prélevé maintenant. Notre équipe vous contactera pour finaliser le règlement."
-                    : "No payment is taken now. Our team will contact you to finalize the payment."}
-                </p>
-                {status === "error" ? <p className="text-sm text-red-500">{dict.common.error}</p> : null}
               </div>
             ) : null}
           </motion.div>
@@ -451,7 +662,7 @@ export function BookingStepper({
               <ChevronRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button type="submit" disabled={status === "loading"}>
+            <Button type="submit" disabled={status === "loading" || !paymentTouched}>
               {status === "loading" ? dict.booking.labels.submitting : dict.booking.labels.confirm}
             </Button>
           )}
