@@ -127,11 +127,12 @@ export function Footer({ locale, dict }: { locale: AppLocale; dict: Dictionary }
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-xs sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 text-center text-xs sm:flex-row sm:text-left">
           <p>
-            © {year} {name} — {dict.footer.rights}
+            © {year} {name}. {dict.footer.rights} {dict.footer.credits}{" "}
+            <span className="font-semibold text-rera-gold-400">PHILAINCORPORATION</span>.
           </p>
-          <p className="text-rera-mist/50">{dict.meta.tagline}</p>
+          <p className="shrink-0 text-rera-mist/50">{dict.meta.tagline}</p>
         </div>
       </Container>
     </footer>
