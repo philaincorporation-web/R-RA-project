@@ -6,6 +6,7 @@ import { Check, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { businessServices, type BusinessField, type BusinessService } from "@/data/business-services";
+import { AccountPrompt } from "@/components/account/account-prompt";
 import type { AppLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
@@ -45,6 +46,7 @@ export function BusinessRequestForm({
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [reference, setReference] = useState<string | null>(null);
+  const [account, setAccount] = useState<{ signedIn: boolean; claimToken: string | null }>({ signedIn: false, claimToken: null });
 
   const service = businessServices.find((s) => s.id === serviceId);
 
@@ -116,6 +118,7 @@ export function BusinessRequestForm({
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) throw new Error("request_failed");
       setReference(json.reference ?? null);
+      setAccount({ signedIn: Boolean(json.signedIn), claimToken: json.claimToken ?? null });
       setStatus("success");
     } catch {
       setStatus("error");
@@ -143,8 +146,17 @@ export function BusinessRequestForm({
             {reference}
           </p>
         ) : null}
+        <AccountPrompt
+          locale={locale}
+          signedIn={account.signedIn}
+          claim={
+            reference && account.claimToken
+              ? { reference, token: account.claimToken, name: contactName, email, phone }
+              : null
+          }
+        />
         <Button
-          variant="secondary"
+          variant="ghost"
           className="mt-2"
           onClick={() => {
             setStatus("idle");

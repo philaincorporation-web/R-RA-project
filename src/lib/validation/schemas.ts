@@ -17,6 +17,7 @@ export const bookingSchema = z
   phone: z.string().min(6, "Numéro de téléphone invalide"),
   country: z.string().min(2),
   notes: z.string().optional(),
+  paymentMethod: z.string().max(40).optional(),
   totalEstimate: z.coerce.number().min(0),
   currency: z.string().default("XAF"),
   })

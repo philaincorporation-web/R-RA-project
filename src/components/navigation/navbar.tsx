@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/navigation/theme-toggle";
 import { LanguageSwitcher } from "@/components/navigation/language-switcher";
+import { AccountLink } from "@/components/navigation/account-link";
 
 import { siteConfig } from "@/data";
 import type { AppLocale } from "@/lib/i18n/config";
@@ -49,7 +50,7 @@ export function Navbar({ locale, dict }: NavbarProps) {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,border-color] duration-300",
+        "fixed inset-x-0 top-0 z-50 print:hidden transition-[background-color,box-shadow,border-color] duration-300",
         dark
           ? "border-b border-transparent bg-gradient-to-b from-rera-navy-950/50 to-transparent"
           : "border-b border-rera-navy-100/70 bg-white/85 shadow-[0_8px_30px_-12px_rgba(13,43,69,0.25)] backdrop-blur-xl dark:border-white/10 dark:bg-rera-navy-900/85"
@@ -132,6 +133,7 @@ export function Navbar({ locale, dict }: NavbarProps) {
         {/* ===== Actions desktop ===== */}
         <div className="hidden shrink-0 items-center gap-2 lg:flex">
           <LanguageSwitcher locale={locale} dark={dark} />
+          <AccountLink locale={locale} dark={dark} />
           <ThemeToggle dark={dark} />
           <Button href={`/${locale}/booking`} size="sm" className="ml-1">
             {dict.nav.book}
@@ -189,6 +191,8 @@ export function Navbar({ locale, dict }: NavbarProps) {
                   </Link>
                 );
               })}
+
+              <AccountLink locale={locale} variant="row" onNavigate={() => setOpen(false)} />
 
               <div className="mt-3 flex items-center justify-between border-t border-rera-navy-100/70 px-3 pt-4 dark:border-white/10">
                 <LanguageSwitcher locale={locale} />

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { formatDate, formatPrice, pick } from "@/lib/utils/format";
 import { estimateTotal } from "@/lib/pricing";
+import { additionalOptions, paymentMethods } from "@/data/booking-options";
+import { AccountPrompt } from "@/components/account/account-prompt";
 import type { AppLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import type { Accommodation, Activity, Package } from "@/types";
@@ -49,19 +51,6 @@ function nightsBetween(start: string, end: string) {
 const inputClasses =
   "w-full rounded-lg border border-rera-navy-200 bg-white px-4 py-3 text-sm text-rera-navy-800 placeholder:text-rera-navy-300 focus:border-rera-lagoon-500 focus:outline-none focus:ring-2 focus:ring-rera-lagoon-200 dark:border-white/15 dark:bg-rera-navy-800 dark:text-white dark:placeholder:text-white/30";
 
-const paymentMethods: { id: string; fr: string; en: string; logo?: string }[] = [
-  { id: "airtel-money", fr: "Airtel Money", en: "Airtel Money", logo: "/payment-icons/airtelmoney.webp" },
-  { id: "moov-money", fr: "Moov Money", en: "Moov Money", logo: "/payment-icons/moovmoney.webp" },
-  { id: "card", fr: "Carte bancaire", en: "Credit card", logo: "/payment-icons/creditcard.jpg" },
-  { id: "on-site", fr: "Paiement sur place", en: "Pay on site", logo: "/payment-icons/Paiementplace.jpg" },
-  { id: "transfer", fr: "Virement bancaire", en: "Bank transfer", logo: "/payment-icons/bancaire.jpg" },
-];
-
-const additionalOptions = [
-  { id: "private-transfer", fr: "Transfert privatif", en: "Private transfer", price: 25000 },
-  { id: "guided-tour", fr: "Visite guidée patrimoine", en: "Guided heritage tour", price: 15000 },
-  { id: "photo-package", fr: "Reportage photo", en: "Photo package", price: 20000 },
-];
 
 export function BookingStepper({
   locale,
@@ -134,6 +123,7 @@ export function BookingStepper({
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [reference, setReference] = useState<string | null>(null);
+  const [account, setAccount] = useState<{ signedIn: boolean; claimToken: string | null }>({ signedIn: false, claimToken: null });
 
   const optionsTotal = selectedOptions.reduce((sum, id) => {
     const opt = additionalOptions.find((o) => o.id === id);
@@ -221,6 +211,7 @@ export function BookingStepper({
       phone,
       country,
       notes: [paymentNote, notes.trim()].filter(Boolean).join(" "),
+      paymentMethod,
       totalEstimate: total,
       currency: selectedOffer.currency,
     };
@@ -234,6 +225,7 @@ export function BookingStepper({
       const json = await res.json();
       if (!res.ok || !json.ok) throw new Error("failed");
       setReference(json.reference ?? null);
+      setAccount({ signedIn: Boolean(json.signedIn), claimToken: json.claimToken ?? null });
       setStatus("success");
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
@@ -259,8 +251,17 @@ export function BookingStepper({
             {reference}
           </p>
         ) : null}
+        <AccountPrompt
+          locale={locale}
+          signedIn={account.signedIn}
+          claim={
+            reference && account.claimToken
+              ? { reference, token: account.claimToken, name: fullName, email, phone, country }
+              : null
+          }
+        />
         <Button
-          variant="secondary"
+          variant="ghost"
           onClick={() => {
             setStep(0);
             setStatus("idle");
