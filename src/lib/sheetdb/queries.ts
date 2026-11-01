@@ -1,6 +1,7 @@
 import "server-only";
 import type { Accommodation, Activity, Package, Testimonial } from "@/types";
 import { sheetdbGetAll, sheetdbGetBy } from "./client";
+import { safeImage } from "@/lib/images";
 import { demoAccommodations, demoActivities, demoPackages, demoTestimonials } from "./demo-data";
 
 /**
@@ -14,6 +15,12 @@ import { demoAccommodations, demoActivities, demoPackages, demoTestimonials } fr
  */
 
 type RawRow = Record<string, string | undefined>;
+
+/** Ignore les lignes sans slug (lignes vides ou incomplètes dans Google Sheets) : elles produiraient des liens cassés. */
+function withSlug<T extends { slug: string }>(items: T[], fallback: T[]): T[] {
+  const valid = items.filter((item) => item.slug.trim() !== "");
+  return valid.length > 0 ? valid : fallback;
+}
 
 function splitList(value?: string): string[] {
   if (!value) return [];
@@ -34,7 +41,7 @@ function mapPackage(row: RawRow): Package {
     nights: Number(row.nights ?? 0),
     price: Number(row.price ?? 0),
     currency: row.currency ?? "XAF",
-    image: row.image ?? "",
+    image: safeImage(row.image, "/plagebleu.jpg"),
     badge: row.badge_fr ? { fr: row.badge_fr, en: row.badge_en ?? row.badge_fr } : undefined,
     inclusions: splitList(row.inclusions_fr).map((fr, i) => ({
       fr,
@@ -54,7 +61,7 @@ function mapActivity(row: RawRow): Activity {
     currency: row.currency ?? "XAF",
     duration: { fr: row.duration_fr ?? "", en: row.duration_en ?? row.duration_fr ?? "" },
     availability: { fr: row.availability_fr ?? "", en: row.availability_en ?? row.availability_fr ?? "" },
-    image: row.image ?? "/plagebleu.jpg",
+    image: safeImage(row.image, "/plagebleu.jpg"),
     category: row.category ?? "general",
   };
 }
@@ -73,14 +80,14 @@ function mapAccommodation(row: RawRow): Accommodation {
       en: splitList(row.amenities_en)[i] ?? fr,
     })),
     availability: { fr: row.availability_fr ?? "", en: row.availability_en ?? row.availability_fr ?? "" },
-    image: row.image ?? "/etoile.jpg",
+    image: safeImage(row.image, "/etoile.jpg"),
   };
 }
 
 export async function getPackages(): Promise<Package[]> {
   const rows = await sheetdbGetAll<RawRow>({ sheet: process.env.SHEETDB_PACKAGES_SHEET });
   if (!rows || rows.length === 0) return demoPackages;
-  return rows.map(mapPackage);
+  return withSlug(rows.map(mapPackage), demoPackages);
 }
 
 export async function getPackageBySlug(slug: string): Promise<Package | null> {
@@ -92,7 +99,7 @@ export async function getPackageBySlug(slug: string): Promise<Package | null> {
 export async function getActivities(): Promise<Activity[]> {
   const rows = await sheetdbGetAll<RawRow>({ sheet: process.env.SHEETDB_ACTIVITIES_SHEET });
   if (!rows || rows.length === 0) return demoActivities;
-  return rows.map(mapActivity);
+  return withSlug(rows.map(mapActivity), demoActivities);
 }
 
 export async function getActivityBySlug(slug: string): Promise<Activity | null> {
@@ -104,7 +111,7 @@ export async function getActivityBySlug(slug: string): Promise<Activity | null> 
 export async function getAccommodations(): Promise<Accommodation[]> {
   const rows = await sheetdbGetAll<RawRow>({ sheet: process.env.SHEETDB_ACCOMMODATION_SHEET });
   if (!rows || rows.length === 0) return demoAccommodations;
-  return rows.map(mapAccommodation);
+  return withSlug(rows.map(mapAccommodation), demoAccommodations);
 }
 
 export async function getAccommodationBySlug(slug: string): Promise<Accommodation | null> {

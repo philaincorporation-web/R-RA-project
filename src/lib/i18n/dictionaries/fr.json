@@ -63,7 +63,8 @@
     "viewAll": "Voir toutes les activités",
     "duration": "Durée",
     "availability": "Disponibilité",
-    "cta": "Découvrir"
+    "cta": "Découvrir",
+    "bookCta": "Réserver cette activité"
   },
   "accommodation": {
     "eyebrow": "Hébergements",
@@ -72,7 +73,8 @@
     "viewAll": "Voir tous les hébergements",
     "capacity": "Capacité",
     "perNight": "/ nuit",
-    "cta": "Réserver"
+    "cta": "Réserver",
+    "detailCta": "Voir le détail"
   },
   "history": {
     "eyebrow": "Histoire & Patrimoine",
@@ -107,12 +109,30 @@
     "title": "Organisez votre événement d'entreprise à Pointe Denis",
     "subtitle": "Séminaires, forums, team building, événements privés : une organisation sur mesure, dans un cadre exceptionnel.",
     "services": [
-      { "title": "Séminaires", "text": "Espaces équipés pour vos sessions de travail en pleine nature." },
-      { "title": "Forums & conférences", "text": "Accueil de grands groupes avec logistique complète." },
-      { "title": "Team building", "text": "Activités collectives sur mesure pour souder vos équipes." },
-      { "title": "Événements privés", "text": "Privatisation de sites pour vos réceptions et célébrations." },
-      { "title": "Restauration", "text": "Offre traiteur adaptée à chaque format d'événement." },
-      { "title": "Hébergement groupe", "text": "Solutions d'hébergement pour délégations et équipes." }
+      {
+        "title": "Séminaires",
+        "text": "Espaces équipés pour vos sessions de travail en pleine nature."
+      },
+      {
+        "title": "Forums & conférences",
+        "text": "Accueil de grands groupes avec logistique complète."
+      },
+      {
+        "title": "Team building",
+        "text": "Activités collectives sur mesure pour souder vos équipes."
+      },
+      {
+        "title": "Événements privés",
+        "text": "Privatisation de sites pour vos réceptions et célébrations."
+      },
+      {
+        "title": "Restauration",
+        "text": "Offre traiteur adaptée à chaque format d'événement."
+      },
+      {
+        "title": "Hébergement groupe",
+        "text": "Solutions d'hébergement pour délégations et équipes."
+      }
     ],
     "cta": "Organiser un événement",
     "formTitle": "Demander un devis Business",

@@ -1,24 +1,12 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useRef, useState, type FormEvent } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Banknote,
-  Building2,
-  Check,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  CreditCard,
-  Lock,
-  Minus,
-  Plus,
-  Smartphone,
-} from "lucide-react";
+import { AlertTriangle, Check, CheckCircle2, ChevronLeft, ChevronRight, Lock, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
-import { formatPrice, pick } from "@/lib/utils/format";
+import { formatDate, formatPrice, pick } from "@/lib/utils/format";
 import { estimateTotal } from "@/lib/pricing";
 import type { AppLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
@@ -33,6 +21,29 @@ interface UnifiedOffer {
   price: number;
   currency: string;
   image: string;
+  capacity?: number;
+}
+
+const MAX_TRAVELERS = 30;
+
+/** Date du jour au format AAAA-MM-JJ (fuseau local), pour bloquer les dates passées. */
+function todayIso() {
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+
+function addDays(iso: string, days: number) {
+  const d = new Date(`${iso}T00:00:00`);
+  d.setDate(d.getDate() + days);
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0, 10);
+}
+
+function nightsBetween(start: string, end: string) {
+  if (!start || !end) return 0;
+  const diff = new Date(`${end}T00:00:00`).getTime() - new Date(`${start}T00:00:00`).getTime();
+  return Math.max(0, Math.round(diff / 86_400_000));
 }
 
 const inputClasses =
@@ -45,14 +56,6 @@ const paymentMethods: { id: string; fr: string; en: string; logo?: string }[] = 
   { id: "on-site", fr: "Paiement sur place", en: "Pay on site", logo: "/payment-icons/Paiementplace.jpg" },
   { id: "transfer", fr: "Virement bancaire", en: "Bank transfer", logo: "/payment-icons/bancaire.jpg" },
 ];
-
-const paymentMethodIcons: Record<string, typeof Banknote> = {
-  "on-site": Banknote,
-  transfer: Building2,
-  "airtel-money": Smartphone,
-  "moov-money": Smartphone,
-  card: CreditCard,
-};
 
 const additionalOptions = [
   { id: "private-transfer", fr: "Transfert privatif", en: "Private transfer", price: 25000 },
@@ -102,25 +105,26 @@ export function BookingStepper({
         price: h.price,
         currency: h.currency,
         image: h.image,
+        capacity: h.capacity,
       })),
     ];
   }, [packages, activities, accommodations, locale]);
 
-  const defaultOffer =
-    offers.find((o) => o.slug === initialSlug && (!initialType || o.type === initialType)) ?? offers[0];
+  const preselectedOffer = initialSlug
+    ? offers.find((o) => o.slug === initialSlug && (!initialType || o.type === initialType))
+    : undefined;
 
-  const [step, setStep] = useState(0);
-  const [selectedOffer, setSelectedOffer] = useState<UnifiedOffer | undefined>(defaultOffer);
+  // Si le visiteur arrive depuis une offre précise, on passe directement au choix de la date.
+  const [step, setStep] = useState(preselectedOffer ? 1 : 0);
+  const [selectedOffer, setSelectedOffer] = useState<UnifiedOffer | undefined>(preselectedOffer ?? offers[0]);
   const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState(paymentMethods[0].id);
-  const [paymentTouched, setPaymentTouched] = useState(false);
-  const [cardName, setCardName] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvc, setCardCvc] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [mobileMoneyNumber, setMobileMoneyNumber] = useState("");
+  const topRef = useRef<HTMLDivElement>(null);
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -136,9 +140,29 @@ export function BookingStepper({
     return sum + (opt?.price ?? 0);
   }, 0);
 
-  const total = selectedOffer
-    ? estimateTotal({ basePrice: selectedOffer.price, adults, children, optionsPrice: optionsTotal })
-    : 0;
+  const isAccommodation = selectedOffer?.type === "accommodation";
+  const nights = isAccommodation ? nightsBetween(startDate, endDate) : 0;
+  const travelers = adults + children;
+  const overCapacity = Boolean(isAccommodation && selectedOffer?.capacity && travelers > selectedOffer.capacity);
+
+  // Hébergement : prix par nuit (et non par personne). Packages/activités : prix par personne.
+  const total = !selectedOffer
+    ? 0
+    : isAccommodation
+    ? Math.round(selectedOffer.price * nights + optionsTotal)
+    : estimateTotal({ basePrice: selectedOffer.price, adults, children, optionsPrice: optionsTotal });
+
+  const fr = locale === "fr";
+  const selectedOptionLabels = additionalOptions
+    .filter((o) => selectedOptions.includes(o.id))
+    .map((o) => (fr ? o.fr : o.en))
+    .join(", ");
+  const dateLabel = startDate
+    ? isAccommodation && endDate
+      ? `${formatDate(startDate, locale)} → ${formatDate(endDate, locale)} (${nights} ${fr ? (nights > 1 ? "nuits" : "nuit") : nights > 1 ? "nights" : "night"})`
+      : formatDate(startDate, locale)
+    : "—";
+  const isMobileMoney = paymentMethod === "airtel-money" || paymentMethod === "moov-money";
 
   const steps = [
     dict.booking.steps.offer,
@@ -156,21 +180,39 @@ export function BookingStepper({
 
   function canProceed() {
     if (step === 0) return Boolean(selectedOffer);
-    if (step === 1) return Boolean(startDate);
-    if (step === 5) return fullName.length > 1 && email.includes("@") && phone.length > 4 && country.length > 1;
+    if (step === 1) return Boolean(startDate) && startDate >= todayIso() && (!isAccommodation || nights > 0);
+    if (step === 5)
+      return (
+        fullName.trim().length > 1 &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) &&
+        phone.replace(/\D/g, "").length >= 6 &&
+        country.trim().length > 1
+      );
     return true;
+  }
+
+  function goTo(next: number) {
+    setStep(next);
+    // Ramène le haut du formulaire à l'écran (utile sur mobile où les étapes sont longues).
+    topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    if (!selectedOffer) return;
+    if (!selectedOffer || !paymentMethod) return;
     setStatus("loading");
+
+    const method = paymentMethods.find((m) => m.id === paymentMethod);
+    const paymentNote = `[${fr ? "Paiement" : "Payment"} : ${method ? method.fr : paymentMethod}${
+      isMobileMoney && mobileMoneyNumber ? ` — ${mobileMoneyNumber}` : ""
+    }]`;
 
     const payload = {
       offerType: selectedOffer.type,
       offerSlug: selectedOffer.slug,
       offerName: selectedOffer.name,
       startDate,
+      endDate: isAccommodation ? endDate : undefined,
       adults,
       children,
       options: selectedOptions,
@@ -178,7 +220,7 @@ export function BookingStepper({
       email,
       phone,
       country,
-      notes,
+      notes: [paymentNote, notes.trim()].filter(Boolean).join(" "),
       totalEstimate: total,
       currency: selectedOffer.currency,
     };
@@ -193,7 +235,7 @@ export function BookingStepper({
       if (!res.ok || !json.ok) throw new Error("failed");
       setReference(json.reference ?? null);
       setStatus("success");
-      setStep(7);
+      topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
       setStatus("error");
     }
@@ -202,6 +244,7 @@ export function BookingStepper({
   if (status === "success") {
     return (
       <motion.div
+        ref={topRef}
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         className="card-surface mx-auto flex max-w-lg flex-col items-center gap-4 rounded-xl2 p-10 text-center shadow-premium"
@@ -222,6 +265,7 @@ export function BookingStepper({
             setStep(0);
             setStatus("idle");
             setReference(null);
+            setPaymentMethod("");
           }}
         >
           {dict.booking.labels.newBooking}
@@ -231,7 +275,23 @@ export function BookingStepper({
   }
 
   return (
-    <div>
+    <div ref={topRef} className="scroll-mt-28">
+      {/* Indicateur de progression mobile (le stepper complet ne tient pas sur petit écran) */}
+      <div className="mb-8 sm:hidden">
+        <div className="flex items-center justify-between text-xs font-medium text-rera-navy-500 dark:text-rera-mist/60">
+          <span>
+            {fr ? "Étape" : "Step"} {step + 1}/{steps.length}
+          </span>
+          <span className="font-semibold text-rera-navy-800 dark:text-white">{steps[step]}</span>
+        </div>
+        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-rera-navy-100 dark:bg-white/10">
+          <div
+            className="h-full rounded-full bg-rera-lagoon-500 transition-all duration-300"
+            style={{ width: `${((step + 1) / steps.length) * 100}%` }}
+          />
+        </div>
+      </div>
+
       {/* Stepper indicator */}
       <div className="mb-10 hidden items-center justify-between sm:flex">
         {steps.map((label, i) => (
@@ -304,7 +364,7 @@ export function BookingStepper({
                       )}
                     >
                       <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg">
-                        <Image src="/tortue.jpg" alt={offer.name} fill className="object-cover" />
+                        <Image src={offer.image} alt={offer.name} fill sizes="56px" className="object-cover" />
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-rera-navy-800 dark:text-white">
@@ -321,17 +381,51 @@ export function BookingStepper({
             ) : null}
 
             {step === 1 ? (
-              <div className="max-w-sm">
+              <div className="max-w-lg">
                 <h3 className="mb-5 text-lg font-semibold text-rera-navy-800 dark:text-white">
                   {dict.booking.labels.chooseDate}
                 </h3>
-                <input
-                  type="date"
-                  required
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className={inputClasses}
-                />
+                <div className={cn("grid gap-4", isAccommodation && "sm:grid-cols-2")}>
+                  <div>
+                    <label htmlFor="booking-start" className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                      {isAccommodation ? (fr ? "Arrivée" : "Check-in") : fr ? "Date" : "Date"}
+                    </label>
+                    <input
+                      id="booking-start"
+                      type="date"
+                      required
+                      min={todayIso()}
+                      value={startDate}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setStartDate(value);
+                        if (endDate && value && endDate <= value) setEndDate(addDays(value, 1));
+                      }}
+                      className={inputClasses}
+                    />
+                  </div>
+                  {isAccommodation ? (
+                    <div>
+                      <label htmlFor="booking-end" className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                        {fr ? "Départ" : "Check-out"}
+                      </label>
+                      <input
+                        id="booking-end"
+                        type="date"
+                        required
+                        min={startDate ? addDays(startDate, 1) : addDays(todayIso(), 1)}
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className={inputClasses}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+                {isAccommodation && nights > 0 ? (
+                  <p className="mt-3 text-sm text-rera-navy-500 dark:text-rera-mist/70">
+                    {nights} {fr ? (nights > 1 ? "nuits" : "nuit") : nights > 1 ? "nights" : "night"}
+                  </p>
+                ) : null}
               </div>
             ) : null}
 
@@ -340,8 +434,35 @@ export function BookingStepper({
                 <h3 className="text-lg font-semibold text-rera-navy-800 dark:text-white">
                   {dict.booking.steps.travelers}
                 </h3>
-                <Counter label={dict.booking.labels.adults} value={adults} min={1} onChange={setAdults} />
-                <Counter label={dict.booking.labels.children} value={children} min={0} onChange={setChildren} />
+                <Counter
+                  label={dict.booking.labels.adults}
+                  value={adults}
+                  min={1}
+                  max={MAX_TRAVELERS - children}
+                  onChange={setAdults}
+                />
+                <Counter
+                  label={dict.booking.labels.children}
+                  value={children}
+                  min={0}
+                  max={MAX_TRAVELERS - adults}
+                  onChange={setChildren}
+                />
+                {overCapacity ? (
+                  <p className="flex items-start gap-2 rounded-xl2 bg-rera-gold-50 p-3 text-xs text-rera-navy-700 dark:bg-white/5 dark:text-rera-mist/80">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-rera-gold-600" />
+                    {fr
+                      ? `Cet hébergement accueille ${selectedOffer?.capacity} personnes maximum. Notre équipe vous proposera une solution adaptée (unités supplémentaires).`
+                      : `This accommodation sleeps up to ${selectedOffer?.capacity} guests. Our team will suggest a suitable option (extra units).`}
+                  </p>
+                ) : null}
+                {travelers >= MAX_TRAVELERS ? (
+                  <p className="text-xs text-rera-navy-500 dark:text-rera-mist/60">
+                    {fr
+                      ? `Au-delà de ${MAX_TRAVELERS} voyageurs, contactez RÈRA Business pour un devis de groupe.`
+                      : `For more than ${MAX_TRAVELERS} travelers, contact RÈRA Business for a group quote.`}
+                  </p>
+                ) : null}
               </div>
             ) : null}
 
@@ -382,12 +503,12 @@ export function BookingStepper({
                 </h3>
                 <dl className="card-surface space-y-3 rounded-xl2 p-5 text-sm">
                   <SummaryRow label={dict.booking.labels.chooseOffer} value={selectedOffer?.name ?? "—"} />
-                  <SummaryRow label={dict.booking.labels.chooseDate} value={startDate || "—"} />
+                  <SummaryRow label={dict.booking.labels.chooseDate} value={dateLabel} />
                   <SummaryRow label={dict.booking.labels.adults} value={String(adults)} />
                   <SummaryRow label={dict.booking.labels.children} value={String(children)} />
                   <SummaryRow
                     label={dict.booking.labels.additionalOptions}
-                    value={selectedOptions.length > 0 ? String(selectedOptions.length) : "—"}
+                    value={selectedOptionLabels || "—"}
                   />
                   <div className="border-t border-rera-navy-100 pt-3 dark:border-white/10">
                     <SummaryRow
@@ -476,13 +597,13 @@ export function BookingStepper({
                       ) : null}
 
                       <dl className="mt-4 space-y-2.5 text-sm">
-                        <SummaryRow label={dict.booking.labels.chooseDate} value={startDate || "—"} />
+                        <SummaryRow label={dict.booking.labels.chooseDate} value={dateLabel} />
                         <SummaryRow label={dict.booking.labels.adults} value={String(adults)} />
                         <SummaryRow label={dict.booking.labels.children} value={String(children)} />
                         {selectedOptions.length > 0 ? (
                           <SummaryRow
                             label={dict.booking.labels.additionalOptions}
-                            value={String(selectedOptions.length)}
+                            value={selectedOptionLabels}
                           />
                         ) : null}
                       </dl>
@@ -515,16 +636,13 @@ export function BookingStepper({
 
                       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                         {paymentMethods.map((method) => {
-                          const Icon = paymentMethodIcons[method.id] ?? CreditCard;
                           const isActive = paymentMethod === method.id;
                           return (
                             <button
                               type="button"
                               key={method.id}
-                              onClick={() => {
-                                setPaymentMethod(method.id);
-                                setPaymentTouched(true);
-                              }}
+                              aria-pressed={isActive}
+                              onClick={() => setPaymentMethod(method.id)}
                               className={cn(
                                 "flex flex-col items-center gap-2 rounded-xl2 border p-3 text-center transition-all",
                                 isActive
@@ -534,21 +652,9 @@ export function BookingStepper({
                             >
                               {method.logo ? (
                                 <div className="relative h-8 w-full">
-                                  <Image
-                                    src={method.logo}
-                                    alt={locale === "fr" ? method.fr : method.en}
-                                    fill
-                                    className="object-contain"
-                                  />
+                                  <Image src={method.logo} alt="" fill sizes="120px" className="object-contain" />
                                 </div>
-                              ) : (
-                                <Icon
-                                  className={cn(
-                                    "h-6 w-6",
-                                    isActive ? "text-rera-lagoon-600" : "text-rera-navy-400 dark:text-rera-mist/50"
-                                  )}
-                                />
-                              )}
+                              ) : null}
                               <span className="text-[11px] font-medium leading-tight text-rera-navy-700 dark:text-rera-mist">
                                 {locale === "fr" ? method.fr : method.en}
                               </span>
@@ -557,72 +663,36 @@ export function BookingStepper({
                         })}
                       </div>
 
-                      {paymentMethod === "card" ? (
-                        <div className="mt-6 space-y-4">
-                          <div>
-                            <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
-                              {locale === "fr" ? "Nom du titulaire" : "Cardholder name"}
-                            </label>
-                            <input
-                              value={cardName}
-                              onChange={(e) => setCardName(e.target.value)}
-                              placeholder="RÈRA VOYAGEUR"
-                              className={inputClasses}
-                            />
-                          </div>
-                          <div>
-                            <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
-                              {locale === "fr" ? "Numéro de carte" : "Card number"}
-                            </label>
-                            <input
-                              value={cardNumber}
-                              onChange={(e) => setCardNumber(e.target.value)}
-                              placeholder="0000 0000 0000 0000"
-                              inputMode="numeric"
-                              className={inputClasses}
-                            />
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
-                                {locale === "fr" ? "Expiration" : "Expiration date"}
-                              </label>
-                              <input
-                                value={cardExpiry}
-                                onChange={(e) => setCardExpiry(e.target.value)}
-                                placeholder="MM/AA"
-                                className={inputClasses}
-                              />
-                            </div>
-                            <div>
-                              <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
-                                CVC
-                              </label>
-                              <input
-                                value={cardCvc}
-                                onChange={(e) => setCardCvc(e.target.value)}
-                                placeholder="123"
-                                inputMode="numeric"
-                                className={inputClasses}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      ) : null}
-
-                      {(paymentMethod === "airtel-money" || paymentMethod === "moov-money") ? (
+                      {isMobileMoney ? (
                         <div className="mt-6">
-                          <label className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
-                            {locale === "fr" ? "Numéro Mobile Money" : "Mobile Money number"}
+                          <label htmlFor="mobile-money" className="mb-1.5 block text-sm font-medium text-rera-navy-700 dark:text-rera-mist">
+                            {fr ? "Numéro Mobile Money (facultatif)" : "Mobile Money number (optional)"}
                           </label>
                           <input
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(e.target.value)}
+                            id="mobile-money"
+                            type="tel"
+                            value={mobileMoneyNumber}
+                            onChange={(e) => setMobileMoneyNumber(e.target.value)}
                             placeholder="074 00 00 00"
                             inputMode="tel"
+                            autoComplete="tel"
                             className={inputClasses}
                           />
                         </div>
+                      ) : null}
+
+                      {paymentMethod === "card" ? (
+                        <p className="mt-6 text-sm text-rera-navy-600 dark:text-rera-mist/80">
+                          {fr
+                            ? "Vous recevrez un lien de paiement sécurisé par email après validation de votre demande. Ne communiquez jamais vos données de carte par formulaire ou par téléphone."
+                            : "You will receive a secure payment link by email once your request is confirmed. Never share your card details through a form or over the phone."}
+                        </p>
+                      ) : null}
+
+                      {!paymentMethod ? (
+                        <p className="mt-4 text-xs text-rera-navy-500 dark:text-rera-mist/60">
+                          {fr ? "Sélectionnez un moyen de paiement pour confirmer." : "Select a payment method to confirm."}
+                        </p>
                       ) : null}
 
                       <div className="mt-6 flex items-start gap-2 rounded-xl2 bg-rera-gold-50 p-4 text-xs text-rera-navy-600 dark:bg-white/5 dark:text-rera-mist/70">
@@ -649,7 +719,7 @@ export function BookingStepper({
           <Button
             type="button"
             variant="ghost"
-            onClick={() => setStep((s) => Math.max(0, s - 1))}
+            onClick={() => goTo(Math.max(0, step - 1))}
             className={cn(step === 0 && "invisible")}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -657,12 +727,12 @@ export function BookingStepper({
           </Button>
 
           {step < 6 ? (
-            <Button type="button" disabled={!canProceed()} onClick={() => setStep((s) => Math.min(6, s + 1))}>
+            <Button type="button" disabled={!canProceed()} onClick={() => goTo(Math.min(6, step + 1))}>
               {dict.booking.labels.next}
               <ChevronRight className="h-4 w-4" />
             </Button>
           ) : (
-            <Button type="submit" disabled={status === "loading" || !paymentTouched}>
+            <Button type="submit" disabled={status === "loading" || !paymentMethod}>
               {status === "loading" ? dict.booking.labels.submitting : dict.booking.labels.confirm}
             </Button>
           )}
@@ -676,29 +746,39 @@ function Counter({
   label,
   value,
   min,
+  max,
   onChange,
 }: {
   label: string;
   value: number;
   min: number;
+  max: number;
   onChange: (v: number) => void;
 }) {
+  const btn =
+    "flex h-8 w-8 items-center justify-center rounded-full border border-rera-navy-200 text-rera-navy-600 transition-colors hover:bg-rera-navy-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/15 dark:text-rera-mist dark:hover:bg-white/10";
   return (
     <div className="flex items-center justify-between rounded-xl2 border border-rera-navy-100 p-4 dark:border-white/10">
       <span className="text-sm font-medium text-rera-navy-700 dark:text-rera-mist">{label}</span>
       <div className="flex items-center gap-3">
         <button
           type="button"
+          aria-label={`${label} −1`}
+          disabled={value <= min}
           onClick={() => onChange(Math.max(min, value - 1))}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-rera-navy-200 text-rera-navy-600 transition-colors hover:bg-rera-navy-100 dark:border-white/15 dark:text-rera-mist dark:hover:bg-white/10"
+          className={btn}
         >
           <Minus className="h-3.5 w-3.5" />
         </button>
-        <span className="w-6 text-center text-sm font-semibold text-rera-navy-800 dark:text-white">{value}</span>
+        <span className="w-6 text-center text-sm font-semibold text-rera-navy-800 dark:text-white" aria-live="polite">
+          {value}
+        </span>
         <button
           type="button"
-          onClick={() => onChange(value + 1)}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-rera-navy-200 text-rera-navy-600 transition-colors hover:bg-rera-navy-100 dark:border-white/15 dark:text-rera-mist dark:hover:bg-white/10"
+          aria-label={`${label} +1`}
+          disabled={value >= max}
+          onClick={() => onChange(Math.min(max, value + 1))}
+          className={btn}
         >
           <Plus className="h-3.5 w-3.5" />
         </button>

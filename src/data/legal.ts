@@ -13,7 +13,7 @@
  */
 
 export const legalContent = {
-  backgroundImage: "/images/bg-legacy.jpg",
+   backgroundImage: "/mentionslegales.jpg",
   overlayOpacity: 0.45,
  
 

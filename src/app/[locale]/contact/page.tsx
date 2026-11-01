@@ -7,6 +7,7 @@ import { PageHero } from "@/components/layout/page-hero";
 import { Container } from "@/components/ui/primitives";
 import { ContactForm } from "@/components/sections/contact-form";
 import { Reveal } from "@/components/ui/aceternity/reveal";
+import { siteConfig } from "@/data";
 
 export async function generateMetadata({
   params,
@@ -26,7 +27,11 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
 
   return (
     <>
-      <PageHero title={dict.pages.contact.title} subtitle={dict.pages.contact.subtitle} />
+      <PageHero
+        title={dict.pages.contact.title}
+        subtitle={dict.pages.contact.subtitle}
+        backgroundImages={["/images/contact.jpg"]}
+      />
       <section className="bg-rera-mist py-20 dark:bg-rera-navy-900">
         <Container>
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
@@ -37,7 +42,7 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                   <p className="font-semibold text-rera-navy-800 dark:text-white">
                     {locale === "fr" ? "Adresse" : "Address"}
                   </p>
-                  <p className="text-sm text-rera-navy-500 dark:text-rera-mist/70">Pointe Denis, Estuaire, Gabon</p>
+                  <p className="text-sm text-rera-navy-500 dark:text-rera-mist/70">{siteConfig.contact.address[locale]}</p>
                 </div>
               </div>
               <div className="card-surface flex items-start gap-3 rounded-xl2 p-5 shadow-sm">
@@ -46,14 +51,14 @@ export default async function ContactPage({ params }: { params: Promise<{ locale
                   <p className="font-semibold text-rera-navy-800 dark:text-white">
                     {locale === "fr" ? "Téléphone" : "Phone"}
                   </p>
-                  <p className="text-sm text-rera-navy-500 dark:text-rera-mist/70">+241 00 00 00 00</p>
+                  <a href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`} className="text-sm text-rera-navy-500 hover:text-rera-lagoon-600 dark:text-rera-mist/70">{siteConfig.contact.phone}</a>
                 </div>
               </div>
               <div className="card-surface flex items-start gap-3 rounded-xl2 p-5 shadow-sm">
                 <Mail className="mt-0.5 h-5 w-5 shrink-0 text-rera-lagoon-500" />
                 <div>
                   <p className="font-semibold text-rera-navy-800 dark:text-white">Email</p>
-                  <p className="text-sm text-rera-navy-500 dark:text-rera-mist/70">contact@rera-pointedenis.com</p>
+                  <a href={`mailto:${siteConfig.contact.email}`} className="text-sm text-rera-navy-500 hover:text-rera-lagoon-600 dark:text-rera-mist/70">{siteConfig.contact.email}</a>
                 </div>
               </div>
             </Reveal>

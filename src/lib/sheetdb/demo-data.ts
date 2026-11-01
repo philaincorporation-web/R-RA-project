@@ -275,7 +275,7 @@ export const demoTestimonials: Testimonial[] = [
       fr: "Un séjour parfaitement organisé, une équipe aux petits soins et un cadre à couper le souffle. RÈRA a changé ma vision de Pointe Denis.",
       en: "A perfectly organized stay, an attentive team and a breathtaking setting. RÈRA changed my perspective on Pointe Denis.",
     },
-    avatar: "/voyageur2.jpg",
+    avatar: "/images/voyageur2.jpg",
     rating: 5,
   },
   {

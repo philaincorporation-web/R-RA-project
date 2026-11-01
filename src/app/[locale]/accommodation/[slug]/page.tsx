@@ -34,10 +34,11 @@ export default async function AccommodationDetailPage({
   if (!item) notFound();
 
   return (
-    <section className="pt-24">
-      <div className="relative h-[40vh] min-h-[300px] w-full overflow-hidden">
-        <Image src="/images/bg-packages.jpg" alt={pick(item.name, locale)} fill priority className="object-cover" />
+    <section>
+      <div className="relative h-[50vh] min-h-[380px] w-full overflow-hidden">
+        <Image src={item.image} alt={pick(item.name, locale)} sizes="100vw" fill priority className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-rera-navy-900 via-rera-navy-900/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-rera-navy-900/70 to-transparent" />
         <Container className="absolute inset-x-0 bottom-8 text-white">
           <Reveal>
             <h1 className="font-heading text-3xl font-bold sm:text-5xl">{pick(item.name, locale)}</h1>

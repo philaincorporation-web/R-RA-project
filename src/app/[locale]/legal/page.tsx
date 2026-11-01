@@ -29,10 +29,12 @@ export default async function LegalPage({ params }: { params: Promise<{ locale: 
 
   return (
     <>
-      <PageHero
+           <PageHero
         eyebrow={content.eyebrow}
         title={content.title}
         subtitle={content.subtitle}
+        backgroundImages={[legalContent.backgroundImage]}
+        overlayOpacity={legalContent.overlayOpacity}
       />
 
       {/* Fond sombre type bento premium */}

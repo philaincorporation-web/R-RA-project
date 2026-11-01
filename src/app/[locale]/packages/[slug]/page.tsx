@@ -39,10 +39,11 @@ export default async function PackageDetailPage({
   const isCustom = pkg.durationDays === 0;
 
   return (
-    <section className="pt-24">
-      <div className="relative h-[45vh] min-h-[320px] w-full overflow-hidden">
-        <Image src={pkg.image} alt={pick(pkg.name, locale)} fill priority className="object-cover" />
+    <section>
+      <div className="relative h-[50vh] min-h-[380px] w-full overflow-hidden">
+        <Image src={pkg.image} alt={pick(pkg.name, locale)} sizes="100vw" fill priority className="object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-rera-navy-900 via-rera-navy-900/40 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-rera-navy-900/70 to-transparent" />
         <Container className="absolute inset-x-0 bottom-8 text-white">
           <Reveal>
             <p className="text-xs font-semibold uppercase tracking-widest text-rera-gold-400">

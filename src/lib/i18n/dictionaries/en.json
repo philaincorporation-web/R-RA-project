@@ -63,7 +63,8 @@
     "viewAll": "View all activities",
     "duration": "Duration",
     "availability": "Availability",
-    "cta": "Discover"
+    "cta": "Discover",
+    "bookCta": "Book this activity"
   },
   "accommodation": {
     "eyebrow": "Accommodation",
@@ -72,7 +73,8 @@
     "viewAll": "View all accommodation",
     "capacity": "Capacity",
     "perNight": "/ night",
-    "cta": "Book"
+    "cta": "Book",
+    "detailCta": "View details"
   },
   "history": {
     "eyebrow": "History & Heritage",
@@ -107,12 +109,30 @@
     "title": "Host your corporate event in Pointe Denis",
     "subtitle": "Seminars, forums, team building, private events: tailor-made organization in an exceptional setting.",
     "services": [
-      { "title": "Seminars", "text": "Equipped spaces for your work sessions surrounded by nature." },
-      { "title": "Forums & conferences", "text": "Hosting large groups with full logistics." },
-      { "title": "Team building", "text": "Tailor-made group activities to strengthen your teams." },
-      { "title": "Private events", "text": "Site privatization for your receptions and celebrations." },
-      { "title": "Catering", "text": "Catering offer adapted to every event format." },
-      { "title": "Group accommodation", "text": "Accommodation solutions for delegations and teams." }
+      {
+        "title": "Seminars",
+        "text": "Equipped spaces for your work sessions surrounded by nature."
+      },
+      {
+        "title": "Forums & conferences",
+        "text": "Hosting large groups with full logistics."
+      },
+      {
+        "title": "Team building",
+        "text": "Tailor-made group activities to strengthen your teams."
+      },
+      {
+        "title": "Private events",
+        "text": "Site privatization for your receptions and celebrations."
+      },
+      {
+        "title": "Catering",
+        "text": "Catering offer adapted to every event format."
+      },
+      {
+        "title": "Group accommodation",
+        "text": "Accommodation solutions for delegations and teams."
+      }
     ],
     "cta": "Plan an event",
     "formTitle": "Request a Business quote",

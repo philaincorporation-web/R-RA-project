@@ -39,7 +39,12 @@ export default async function BookingPage({
 
   return (
     <>
-      <PageHero title={dict.pages.booking.title} subtitle={dict.pages.booking.subtitle}  />
+           <PageHero
+        title={dict.pages.booking.title}
+        subtitle={dict.pages.booking.subtitle}
+        backgroundImages={["/reservation.jpg"]}
+        overlayOpacity={0.5}
+      />
         
       <section className="bg-white py-16 dark:bg-rera-navy-800/40">
         <Container>

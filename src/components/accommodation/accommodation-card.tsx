@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Users } from "lucide-react";
 import type { Accommodation } from "@/types";
 import type { AppLocale } from "@/lib/i18n/config";
@@ -29,7 +30,9 @@ export function AccommodationCard({
       <div className="flex flex-1 flex-col p-6">
         <div className="flex items-start justify-between gap-4">
           <h3 className="font-heading text-lg font-semibold text-rera-navy-800 dark:text-white">
-            {pick(item.name, locale)}
+            <Link href={`/${locale}/accommodation/${item.slug}`} className="hover:text-rera-lagoon-600 dark:hover:text-rera-lagoon-300">
+              {pick(item.name, locale)}
+            </Link>
           </h3>
           <div className="flex items-center gap-1 text-xs font-medium text-rera-navy-500 dark:text-rera-mist/60">
             <Users className="h-3.5 w-3.5" />
@@ -39,7 +42,7 @@ export function AccommodationCard({
         <p className="mt-2 text-sm leading-relaxed text-rera-navy-500 dark:text-rera-mist/70">
           {pick(item.description, locale)}
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mb-5 mt-3 flex flex-wrap gap-2">
           {item.amenities.map((a) => (
             <span
               key={pick(a, locale)}
@@ -49,7 +52,7 @@ export function AccommodationCard({
             </span>
           ))}
         </div>
-        <div className="mt-auto flex items-center justify-between border-t border-rera-navy-100/60 pt-4 mt-5 dark:border-white/10">
+        <div className="mt-auto flex items-center justify-between border-t border-rera-navy-100/60 pt-4 dark:border-white/10">
           <span className="text-lg font-bold text-rera-navy-800 dark:text-white">
             {formatPrice(item.price, item.currency, locale)}
             <span className="ml-1 text-xs font-normal text-rera-navy-400 dark:text-rera-mist/50">

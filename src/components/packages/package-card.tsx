@@ -22,13 +22,13 @@ export function PackageCard({
   return (
     <div className="group card-surface flex flex-col overflow-hidden rounded-xl2 shadow-premium transition-transform duration-300 hover:-translate-y-1.5">
       <div className="relative h-56 w-full overflow-hidden">
-        <Image
-          src="/plagebleu.jpg"
-          alt={pick(pkg.name, locale)}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, 33vw"
-        />
+       <Image
+  src={pkg.image || "/plagebleu.jpg"}
+  alt={pick(pkg.name, locale)}
+  fill
+  className="object-cover transition-transform duration-700 group-hover:scale-110"
+  sizes="(max-width: 768px) 100vw, 33vw"
+/>
         <div className="absolute inset-0 bg-gradient-to-t from-rera-navy-900/70 via-transparent to-transparent" />
         {pkg.badge ? (
           <div className="absolute left-4 top-4">

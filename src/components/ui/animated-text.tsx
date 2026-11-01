@@ -34,16 +34,13 @@ export function AnimatedText({
     splitter.addEffect(({ lines }) => {
       if (cancelled || lines.length === 0) return;
 
+      // Animation d'entrée jouée une seule fois : le texte reste ensuite lisible
+      // (auparavant il sortait de l'écran et revenait en boucle).
       return animate(lines, {
-        y: [
-          { to: ["100%", "0%"] },
-          { to: "-100%", delay: 950, ease: "in(3)" },
-        ],
-        duration: 1200,
+        y: { from: "100%", to: "0%" },
+        duration: 900,
         ease: "out(3)",
-        delay: stagger(200),
-        loop: true,
-        loopDelay: 500,
+        delay: stagger(150),
       });
     });
 

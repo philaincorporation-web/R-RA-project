@@ -51,7 +51,7 @@ function NavigationOverlayInner() {
           transition={{ duration: 0.2 }}
           className="fixed inset-0 z-[200] flex items-center justify-center bg-white/50 backdrop-blur-md dark:bg-rera-navy-900/50"
         >
-          <HashLoader color="#1a0ea0" size={60} />
+          <HashLoader color="#20B2C9" size={60} />
         </motion.div>
       ) : null}
     </AnimatePresence>

@@ -1,5 +1,6 @@
 import "server-only";
 import { sheetdbInsert } from "./client";
+import { businessServices } from "@/data/business-services";
 import type { BookingInput, BusinessRequestInput, ContactInput } from "@/lib/validation/schemas";
 
 function generateReference(prefix: string) {
@@ -38,19 +39,33 @@ export async function createBooking(input: BookingInput) {
 
 export async function createBusinessRequest(input: BusinessRequestInput) {
   const reference = generateReference("RERA-BIZ");
+  const service = businessServices.find((s) => s.id === input.service);
+
+  // Les détails propres à la rubrique sont regroupés dans la colonne "message"
+  // (une ligne par champ) pour rester compatibles avec les colonnes existantes de la feuille.
+  const detailLines = input.details
+    .filter((d) => d.value.trim() !== "")
+    .map((d) => `• ${d.label} : ${d.value}`);
+  const message = [
+    detailLines.join("\n"),
+    input.message?.trim() ? `Précisions complémentaires :\n${input.message.trim()}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+
   const result = await sheetdbInsert(
     {
       reference,
       created_at: new Date().toISOString(),
-      company_name: input.companyName,
+      company_name: input.organization ?? "",
       contact_name: input.contactName,
       email: input.email,
       phone: input.phone,
-      event_type: input.eventType,
-      attendees: input.attendees,
+      event_type: service?.title.fr ?? input.service,
+      attendees: input.attendees ?? "",
       preferred_date: input.preferredDate ?? "",
-      budget_range: input.budgetRange ?? "",
-      message: input.message,
+      budget_range: input.budget ?? "",
+      message,
       status: "new",
     },
     { sheet: process.env.SHEETDB_BUSINESS_SHEET }

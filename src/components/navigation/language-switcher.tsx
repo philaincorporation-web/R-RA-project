@@ -1,18 +1,22 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { locales } from "@/lib/i18n/config";
 import type { AppLocale } from "@/lib/i18n/config";
 import { cn } from "@/lib/utils/cn";
 
-function swapLocale(pathname: string, target: AppLocale) {
+function swapLocale(pathname: string, target: AppLocale, search = "") {
   const segments = pathname.split("/");
   segments[1] = target;
-  return segments.join("/") || `/${target}`;
+  const path = segments.join("/") || `/${target}`;
+  return search ? `${path}?${search}` : path;
 }
 
-export function LanguageSwitcher({ locale, dark }: { locale: AppLocale; dark?: boolean }) {
+type Props = { locale: AppLocale; dark?: boolean };
+
+function Switcher({ locale, dark, search }: Props & { search?: string }) {
   const pathname = usePathname();
 
   return (
@@ -25,7 +29,9 @@ export function LanguageSwitcher({ locale, dark }: { locale: AppLocale; dark?: b
       {locales.map((l) => (
         <Link
           key={l}
-          href={swapLocale(pathname, l)}
+          href={swapLocale(pathname, l, search)}
+          hrefLang={l}
+          aria-current={l === locale ? "true" : undefined}
           className={cn(
             "rounded-full px-2.5 py-1 uppercase transition-colors",
             l === locale
@@ -39,5 +45,19 @@ export function LanguageSwitcher({ locale, dark }: { locale: AppLocale; dark?: b
         </Link>
       ))}
     </div>
+  );
+}
+
+/** Conserve les paramètres d'URL (ex. ?offer=…&type=… sur la réservation) lors du changement de langue. */
+function SwitcherWithSearch(props: Props) {
+  const searchParams = useSearchParams();
+  return <Switcher {...props} search={searchParams.toString()} />;
+}
+
+export function LanguageSwitcher(props: Props) {
+  return (
+    <Suspense fallback={<Switcher {...props} />}>
+      <SwitcherWithSearch {...props} />
+    </Suspense>
   );
 }

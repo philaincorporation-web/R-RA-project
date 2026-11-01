@@ -1,17 +1,35 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown, PlayCircle } from "lucide-react";
+import { ArrowRight, CalendarCheck, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spotlight } from "@/components/ui/aceternity/spotlight";
 import { siteConfig } from "@/data";
 import type { AppLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 
+// "Ordinateur" = largeur ≥ 1024 px (breakpoint lg de Tailwind, le même que la navbar).
+const SMALL_SCREEN_QUERY = "(max-width: 1023.98px)";
+
+function subscribe(callback: () => void) {
+  const mql = window.matchMedia(SMALL_SCREEN_QUERY);
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
 export function Hero({ locale, dict }: { locale: AppLocale; dict: Dictionary }) {
+  // Côté serveur : false (image seule), puis la vidéo est ajoutée après chargement sur petit écran.
+  const isSmallScreen = useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(SMALL_SCREEN_QUERY).matches,
+    () => false
+  );
+
   return (
     <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-rera-navy-900">
+      {/* Image de fond : affichée sur ordinateur, et sur mobile/tablette le temps que la vidéo charge. */}
       <Image
         src="/images/bg-activities.jpg"
         alt="Pointe Denis, Gabon"
@@ -20,6 +38,24 @@ export function Hero({ locale, dict }: { locale: AppLocale; dict: Dictionary }) 
         className="object-cover opacity-60"
         sizes="100vw"
       />
+
+      {/* Vidéo immersive en boucle, uniquement sur téléphone et tablette (< 1024 px).
+          Elle n'est pas du tout insérée sur ordinateur, donc pas téléchargée.
+          muted + playsInline sont obligatoires pour la lecture automatique sur mobile. */}
+      {isSmallScreen ? (
+        <video
+          className="absolute inset-0 h-full w-full object-cover opacity-75"
+          src="/videoPadeAccueil.mp4"
+          poster="/images/bg-activities.jpg"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden
+          tabIndex={-1}
+        />
+      ) : null}
       <div className="absolute inset-0 bg-gradient-to-t from-rera-navy-900 via-rera-navy-900/60 to-rera-navy-900/20" />
       <div className="absolute inset-0 bg-gradient-to-r from-rera-navy-900/80 via-transparent to-rera-navy-900/40" />
       <Spotlight />
@@ -76,7 +112,7 @@ export function Hero({ locale, dict }: { locale: AppLocale; dict: Dictionary }) 
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button href={`/${locale}/booking`} variant="outline" size="lg">
-            <PlayCircle className="h-4 w-4" />
+            <CalendarCheck className="h-4 w-4" />
             {dict.hero.ctaSecondary}
           </Button>
         </motion.div>

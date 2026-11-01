@@ -10,7 +10,7 @@ export function PageBackground({ src, overlayOpacity = 0.7 }: Props) {
     <>
       <div className="pointer-events-none fixed inset-0 -z-10">
         <Image
-          src="/images/bg-home.jpg"
+          src={src}
           alt=""
           fill
           priority

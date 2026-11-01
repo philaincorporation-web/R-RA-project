@@ -54,10 +54,11 @@ export function HeroBackgroundCarousel({
           />
         </div>
       ))}
-      <div
-        className="absolute inset-0 bg-rera-navy-950"
+            <div
+        className="absolute inset-0 bg-gradient-to-t from-rera-navy-950 via-rera-navy-900/80 to-rera-navy-900/30"
         style={{ opacity: overlayOpacity }}
       />
+      <div className="absolute inset-0 bg-rera-aurora opacity-30" />
     </div>
   );
 }

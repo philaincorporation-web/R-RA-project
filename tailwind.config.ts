@@ -1,14 +1,21 @@
+
 import type { Config } from "tailwindcss";
 
 const config: Config = {
   darkMode: "class",
+
   content: [
     "./src/app/**/*.{ts,tsx}",
     "./src/components/**/*.{ts,tsx}",
   ],
+
   theme: {
     extend: {
       colors: {
+        // ============================================================
+        // PALETTE RÈRA
+        // ============================================================
+
         "rera-navy": {
           DEFAULT: "#0D2B45",
           50: "#E8EDF1",
@@ -23,6 +30,7 @@ const config: Config = {
           900: "#061421",
           950: "#030A11",
         },
+
         "rera-lagoon": {
           DEFAULT: "#20B2C9",
           50: "#EAFAFC",
@@ -36,6 +44,7 @@ const config: Config = {
           800: "#0F4C57",
           900: "#092D33",
         },
+
         "rera-emerald": {
           DEFAULT: "#4CC4A1",
           50: "#EBFBF6",
@@ -49,6 +58,7 @@ const config: Config = {
           800: "#143B2F",
           900: "#0A1D17",
         },
+
         "rera-gold": {
           DEFAULT: "#F5CB6A",
           50: "#FEFBF2",
@@ -62,44 +72,170 @@ const config: Config = {
           800: "#654B10",
           900: "#332608",
         },
+
         "rera-mist": "#F2F6F8",
+
+        // ============================================================
+        // COULEURS SÉMANTIQUES SHADCN / UI
+        // Ces couleurs correspondent aux variables définies dans
+        // src/styles/globals.css
+        // ============================================================
+
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+
+        card: {
+          DEFAULT: "var(--card)",
+          foreground: "var(--card-foreground)",
+        },
+
+        popover: {
+          DEFAULT: "var(--popover)",
+          foreground: "var(--popover-foreground)",
+        },
+
+        primary: {
+          DEFAULT: "var(--primary)",
+          foreground: "var(--primary-foreground)",
+        },
+
+        secondary: {
+          DEFAULT: "var(--secondary)",
+          foreground: "var(--secondary-foreground)",
+        },
+
+        muted: {
+          DEFAULT: "var(--muted)",
+          foreground: "var(--muted-foreground)",
+        },
+
+        accent: {
+          DEFAULT: "var(--accent)",
+          foreground: "var(--accent-foreground)",
+        },
+
+        destructive: {
+          DEFAULT: "var(--destructive)",
+          foreground: "var(--destructive-foreground)",
+        },
+
+        border: "var(--border)",
+        input: "var(--input)",
+        ring: "var(--ring)",
+
+        chart: {
+          1: "var(--chart-1)",
+          2: "var(--chart-2)",
+          3: "var(--chart-3)",
+          4: "var(--chart-4)",
+          5: "var(--chart-5)",
+        },
+
+        sidebar: {
+          DEFAULT: "var(--sidebar)",
+          foreground: "var(--sidebar-foreground)",
+          primary: "var(--sidebar-primary)",
+          "primary-foreground": "var(--sidebar-primary-foreground)",
+          accent: "var(--sidebar-accent)",
+          "accent-foreground": "var(--sidebar-accent-foreground)",
+          border: "var(--sidebar-border)",
+          ring: "var(--sidebar-ring)",
+        },
       },
+
+      // ============================================================
+      // TYPOGRAPHIE
+      // ============================================================
+
       fontFamily: {
-        heading: ["var(--font-poppins)", "system-ui", "sans-serif"],
-        body: ["var(--font-inter)", "system-ui", "sans-serif"],
+        heading: [
+          "var(--font-poppins)",
+          "system-ui",
+          "sans-serif",
+        ],
+
+        body: [
+          "var(--font-inter)",
+          "system-ui",
+          "sans-serif",
+        ],
       },
+
+      // ============================================================
+      // BACKGROUNDS RÈRA
+      // ============================================================
+
       backgroundImage: {
-        "rera-gradient": "linear-gradient(135deg, #0D2B45 0%, #156D7D 55%, #20B2C9 100%)",
-        "rera-gold-gradient": "linear-gradient(135deg, #F5CB6A 0%, #EFB52F 100%)",
-        "rera-aurora": "radial-gradient(60% 60% at 20% 20%, rgba(32,178,201,0.35) 0%, rgba(13,43,69,0) 60%), radial-gradient(50% 50% at 80% 30%, rgba(76,196,161,0.30) 0%, rgba(13,43,69,0) 60%), radial-gradient(60% 60% at 50% 90%, rgba(245,203,106,0.20) 0%, rgba(13,43,69,0) 60%)",
+        "rera-gradient":
+          "linear-gradient(135deg, #0D2B45 0%, #156D7D 55%, #20B2C9 100%)",
+
+        "rera-gold-gradient":
+          "linear-gradient(135deg, #F5CB6A 0%, #EFB52F 100%)",
+
+        "rera-aurora":
+          "radial-gradient(60% 60% at 20% 20%, rgba(32,178,201,0.35) 0%, rgba(13,43,69,0) 60%), radial-gradient(50% 50% at 80% 30%, rgba(76,196,161,0.30) 0%, rgba(13,43,69,0) 60%), radial-gradient(60% 60% at 50% 90%, rgba(245,203,106,0.20) 0%, rgba(13,43,69,0) 60%)",
       },
+
+      // ============================================================
+      // OMBRES
+      // ============================================================
+
       boxShadow: {
-        premium: "0 20px 60px -15px rgba(13, 43, 69, 0.35)",
-        "glow-gold": "0 0 40px -8px rgba(245, 203, 106, 0.55)",
-        "glow-lagoon": "0 0 40px -8px rgba(32, 178, 201, 0.45)",
+        premium:
+          "0 20px 60px -15px rgba(13, 43, 69, 0.35)",
+
+        "glow-gold":
+          "0 0 40px -8px rgba(245, 203, 106, 0.55)",
+
+        "glow-lagoon":
+          "0 0 40px -8px rgba(32, 178, 201, 0.45)",
       },
+
+      // ============================================================
+      // BORDER RADIUS
+      // ============================================================
+
       borderRadius: {
         xl2: "1.25rem",
       },
+
+      // ============================================================
+      // ANIMATIONS
+      // ============================================================
+
       animation: {
         "spin-slow": "spin 14s linear infinite",
         float: "float 6s ease-in-out infinite",
         "float-delayed": "float 7s ease-in-out 1.2s infinite",
         shimmer: "shimmer 2.5s linear infinite",
       },
+
       keyframes: {
         float: {
-          "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-14px)" },
+          "0%, 100%": {
+            transform: "translateY(0px)",
+          },
+
+          "50%": {
+            transform: "translateY(-14px)",
+          },
         },
+
         shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
+          "0%": {
+            backgroundPosition: "-200% 0",
+          },
+
+          "100%": {
+            backgroundPosition: "200% 0",
+          },
         },
       },
     },
   },
+
   plugins: [],
 };
 
 export default config;
+

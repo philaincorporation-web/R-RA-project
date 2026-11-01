@@ -6,6 +6,7 @@ import { isValidLocale, locales, type AppLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { Navbar } from "@/components/navigation/navbar";
 import { Footer } from "@/components/layout/footer";
+import { HtmlLang } from "@/components/layout/html-lang";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -80,6 +81,7 @@ export default async function LocaleLayout({
 
   return (
     <>
+      <HtmlLang locale={locale} />
       <Navbar locale={locale} dict={dict} />
       <main className="min-h-[60svh]">{children}</main>
       <Footer locale={locale} dict={dict} />

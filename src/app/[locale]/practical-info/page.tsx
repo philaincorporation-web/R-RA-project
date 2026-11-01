@@ -46,7 +46,11 @@ export default async function PracticalInfoPage({ params }: { params: Promise<{ 
 
   return (
     <>
-      <PageHero title={dict.pages.practicalInfo.title} subtitle={dict.pages.practicalInfo.subtitle} />
+      <PageHero
+        title={dict.pages.practicalInfo.title}
+        subtitle={dict.pages.practicalInfo.subtitle}
+        backgroundImages={["/navette.jpg"]}
+      />
       <section className="bg-white py-20 dark:bg-rera-navy-800/40">
         <Container>
           <Reveal>

@@ -31,8 +31,9 @@ export default async function AccommodationPage({ params }: { params: Promise<{ 
         eyebrow={dict.accommodation.eyebrow}
         title={dict.pages.accommodation.title}
         subtitle={dict.pages.accommodation.subtitle}
+        backgroundImages={["/images/bg-accommodation.jpg", "/bungalowLagon.jpg", "/suitesurmer.jpg"]}
       />
-      <section className="bg-white py-20 dark:bg-rera-navy-800/40">
+      <section className="bg-rera-mist py-20 dark:bg-rera-navy-900">
         <Container>
           <div className="space-y-6">
             {items.map((item, i) => (

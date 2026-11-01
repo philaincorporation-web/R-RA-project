@@ -18,7 +18,7 @@ export function PageHero({
   overlayOpacity = 0.55,
 }: PageHeroProps) {
   return (
-    <section className="relative min-h-[320px] overflow-hidden py-28 sm:py-32">
+    <section className="relative min-h-[320px] overflow-hidden py-28 text-white sm:py-32">
       <HeroBackgroundCarousel
         images={backgroundImages}
         overlayOpacity={overlayOpacity}

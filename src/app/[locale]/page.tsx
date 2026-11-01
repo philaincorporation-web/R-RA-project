@@ -58,7 +58,7 @@ export default async function HomePage({
       <PageBackground src="/images/bg-home.jpg" />
 
       <Hero locale={locale} dict={dict} />
-      <WhyPointeDenis dict={dict} />
+      <WhyPointeDenis locale={locale} dict={dict} />
       <PopularPackages packages={packages} locale={locale} dict={dict} />
       <ActivitiesPreview activities={activities} locale={locale} dict={dict} />
       <AccommodationPreview

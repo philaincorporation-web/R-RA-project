@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Clock, MapPin } from "lucide-react";
 import type { Activity } from "@/types";
 import type { AppLocale } from "@/lib/i18n/config";
@@ -19,7 +20,7 @@ export function ActivityCard({
     <div className="group card-surface flex flex-col overflow-hidden rounded-xl2 shadow-premium transition-transform duration-300 hover:-translate-y-1.5">
       <div className="relative h-48 w-full overflow-hidden">
         <Image
-          src="/savana2.jpg"
+          src={activity.image}
           alt={pick(activity.name, locale)}
           fill
           className="object-cover transition-transform duration-700 group-hover:scale-110"
@@ -28,7 +29,9 @@ export function ActivityCard({
       </div>
       <div className="flex flex-1 flex-col p-6">
         <h3 className="font-heading text-lg font-semibold text-rera-navy-800 dark:text-white">
-          {pick(activity.name, locale)}
+          <Link href={`/${locale}/activities/${activity.slug}`} className="hover:text-rera-lagoon-600 dark:hover:text-rera-lagoon-300">
+            {pick(activity.name, locale)}
+          </Link>
         </h3>
         <p className="mt-2 text-sm leading-relaxed text-rera-navy-500 dark:text-rera-mist/70">
           {pick(activity.description, locale)}
@@ -47,7 +50,7 @@ export function ActivityCard({
           <span className="text-lg font-bold text-rera-navy-800 dark:text-white">
             {formatPrice(activity.price, activity.currency, locale)}
           </span>
-          <Button href={`/${locale}/booking?offer=${activity.slug}&type=activity`} size="sm" variant="secondary">
+          <Button href={`/${locale}/activities/${activity.slug}`} size="sm" variant="secondary">
             {dict.activities.cta}
           </Button>
         </div>

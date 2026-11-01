@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { isValidLocale, type AppLocale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { PageHero } from "@/components/layout/page-hero";
-import { Container } from "@/components/ui/primitives";
+import { BusinessServices } from "@/components/business/business-services";
 
 export async function generateMetadata({
   params,
@@ -32,25 +32,6 @@ export default async function BusinessPage({
   if (!isValidLocale(locale)) notFound();
   const dict = await getDictionary(locale);
 
-  const services =
-    locale === "fr"
-      ? [
-          "Séminaires & forums",
-          "Team building",
-          "Événements d'entreprise",
-          "Privatisation",
-          "Restauration sur mesure",
-          "Hébergement groupe",
-        ]
-      : [
-          "Seminars & forums",
-          "Team building",
-          "Corporate events",
-          "Private hire",
-          "Custom catering",
-          "Group accommodation",
-        ];
-
   return (
     <>
       <PageHero
@@ -69,20 +50,7 @@ export default async function BusinessPage({
         ]}
       />
 
-      <section className="bg-rera-mist py-20 dark:bg-rera-navy-900">
-        <Container>
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {services.map((s) => (
-              <li
-                key={s}
-                className="rounded-xl border border-border bg-card px-5 py-4 font-medium"
-              >
-                {s}
-              </li>
-            ))}
-          </ul>
-        </Container>
-      </section>
+      <BusinessServices locale={locale} dict={dict} />
     </>
   );
 }
