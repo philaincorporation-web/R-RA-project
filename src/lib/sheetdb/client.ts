@@ -1,9 +1,8 @@
 import "server-only";
 
 /**
- * Client SheetDB minimal, utilisé uniquement côté serveur
- * (Server Components, Route Handlers). Ne jamais importer ce
- * fichier depuis un composant "use client".
+ * Client SheetDB en lecture seule, pour le catalogue (jusqu'à sa migration vers Neon).
+ * Uniquement côté serveur : ne jamais importer ce fichier depuis un composant "use client".
  */
 
 const SHEETDB_API_URL = process.env.SHEETDB_API_URL;
@@ -70,35 +69,5 @@ export async function sheetdbGetBy<T = Record<string, unknown>>(
     return (await res.json()) as T[];
   } catch {
     return null;
-  }
-}
-
-/**
- * Insère une nouvelle ligne (écriture) dans une feuille SheetDB.
- * Réservé aux Route Handlers (jamais appelé côté client).
- */
-export async function sheetdbInsert(
-  data: Record<string, unknown>,
-  options: SheetDBOptions = {}
-): Promise<{ ok: boolean; created?: number }> {
-  const url = buildUrl("/", options.sheet);
-  if (!url) {
-    // Pas de SheetDB configuré : on simule un succès pour ne pas bloquer
-    // le développement / la démo, mais on log clairement l'absence de config.
-    console.warn("[sheetdb] SHEETDB_API_URL manquant : insertion simulée.", data);
-    return { ok: true, created: 1 };
-  }
-
-  try {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: authHeaders(),
-      body: JSON.stringify({ data: [data] }),
-    });
-    if (!res.ok) return { ok: false };
-    const json = await res.json();
-    return { ok: true, created: json.created ?? 1 };
-  } catch {
-    return { ok: false };
   }
 }

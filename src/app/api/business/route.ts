@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { businessRequestSchema } from "@/lib/validation/schemas";
-import { createBusinessRequest } from "@/lib/sheetdb/mutations";
 import { getCurrentUser } from "@/lib/auth/server";
 import { recordReservation } from "@/lib/db/reservations";
+import { generateReference } from "@/lib/db/contact";
+import { notifyTeam } from "@/lib/notifications/team";
 import { businessServices } from "@/data/business-services";
 
 export async function POST(request: Request) {
@@ -22,24 +23,19 @@ export async function POST(request: Request) {
   }
 
   const input = parsed.data;
-  const result = await createBusinessRequest(input);
-  if (!result.ok) {
-    return NextResponse.json({ ok: false, error: "sheetdb_error" }, { status: 502 });
-  }
-
-  // Historique pour l'espace client (un échec ici ne bloque pas la demande).
+  const reference = generateReference("RERA-BIZ");
+  const title = businessServices.find((s) => s.id === input.service)?.title.fr ?? input.service;
   const user = await getCurrentUser();
   let claimToken: string | null = null;
   try {
-    const service = businessServices.find((s) => s.id === input.service);
     ({ claimToken } = await recordReservation(
       {
-        reference: result.reference,
+        reference,
         kind: "business",
         fullName: input.contactName,
         email: input.email,
         phone: input.phone,
-        title: service?.title.fr ?? input.service,
+        title,
         startDate: input.preferredDate,
         summary: {
           service: input.service,
@@ -53,13 +49,24 @@ export async function POST(request: Request) {
       user?.id ?? null
     ));
   } catch (error) {
-    console.error("[business] enregistrement Postgres impossible", error);
+    console.error("[business] enregistrement impossible", error);
+    return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
 
-  return NextResponse.json({
-    ok: true,
-    reference: result.reference,
-    signedIn: Boolean(user),
-    claimToken,
-  });
+  after(() =>
+    notifyTeam({
+      subject: `Nouvelle demande Business : ${title}`,
+      lines: [
+        ["Référence", reference],
+        ["Rubrique", title],
+        ["Contact", input.contactName],
+        ["Organisation", input.organization || "—"],
+        ["E-mail", input.email],
+        ["Téléphone", input.phone],
+      ],
+      adminPath: `/fr/admin/business/${encodeURIComponent(reference)}`,
+    })
+  );
+
+  return NextResponse.json({ ok: true, reference, signedIn: Boolean(user), claimToken });
 }

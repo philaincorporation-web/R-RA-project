@@ -7,7 +7,7 @@ import { getDictionary } from "@/lib/i18n/get-dictionary";
 import { Navbar } from "@/components/navigation/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HtmlLang } from "@/components/layout/html-lang";
-import { HideOnAuth } from "@/components/layout/hide-on-auth";
+import { HideSiteChrome } from "@/components/layout/hide-site-chrome";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -83,13 +83,13 @@ export default async function LocaleLayout({
   return (
     <>
       <HtmlLang locale={locale} />
-      <HideOnAuth>
+      <HideSiteChrome>
         <Navbar locale={locale} dict={dict} />
-      </HideOnAuth>
+      </HideSiteChrome>
       <main className="min-h-[60svh]">{children}</main>
-      <HideOnAuth>
+      <HideSiteChrome>
         <Footer locale={locale} dict={dict} />
-      </HideOnAuth>
+      </HideSiteChrome>
     </>
   );
 }

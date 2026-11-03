@@ -16,7 +16,7 @@ export const bookingSchema = z
   email: z.string().email("Email invalide"),
   phone: z.string().min(6, "Numéro de téléphone invalide"),
   country: z.string().min(2),
-  notes: z.string().optional(),
+  notes: z.string().max(3000).optional(),
   paymentMethod: z.string().max(40).optional(),
   totalEstimate: z.coerce.number().min(0),
   currency: z.string().default("XAF"),
@@ -65,10 +65,10 @@ export const businessRequestSchema = z.object({
 export type BusinessRequestInput = z.infer<typeof businessRequestSchema>;
 
 export const contactSchema = z.object({
-  fullName: z.string().min(2, "Nom trop court"),
-  email: z.string().email("Email invalide"),
-  subject: z.string().min(2, "Sujet requis"),
-  message: z.string().min(10, "Message trop court (10 caractères min.)"),
+  fullName: z.string().min(2, "Nom trop court").max(120),
+  email: z.string().email("Email invalide").max(200),
+  subject: z.string().min(2, "Sujet requis").max(200),
+  message: z.string().min(10, "Message trop court (10 caractères min.)").max(5000),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;

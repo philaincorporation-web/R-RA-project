@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { CheckCircle2, ChevronRight, LogOut, Mail, MapPin, Phone, Inbox } from "lucide-react";
+import { CheckCircle2, ChevronRight, LogOut, Mail, MapPin, Phone, Inbox, ShieldCheck } from "lucide-react";
 import { isValidLocale } from "@/lib/i18n/config";
 import { getCurrentUser } from "@/lib/auth/server";
+import { getAdminContext } from "@/lib/admin/server";
 import { getProfile, listUserReservations, type Reservation } from "@/lib/db/reservations";
 import { PageHero } from "@/components/layout/page-hero";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,8 @@ export default async function AccountPage({
   }
 
   const firstName = user.name?.split(" ")[0] ?? "";
+  // Membres de l'équipe : accès direct au back-office.
+  const admin = await getAdminContext();
 
   return (
     <>
@@ -102,6 +105,13 @@ export default async function AccountPage({
                 </Button>
               </form>
             </div>
+
+            {admin ? (
+              <Button href={`/${locale}/admin`} variant="secondary" size="sm" className="w-full">
+                <ShieldCheck className="h-4 w-4" />
+                {fr ? "Administration" : "Admin dashboard"}
+              </Button>
+            ) : null}
 
             <div className="card-surface rounded-xl2 p-5 text-sm text-rera-navy-500 shadow-sm dark:text-rera-mist/70">
               {fr

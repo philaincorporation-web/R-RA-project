@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { bookingSchema } from "@/lib/validation/schemas";
-import { createBooking } from "@/lib/sheetdb/mutations";
 import { getCurrentUser } from "@/lib/auth/server";
 import { recordReservation } from "@/lib/db/reservations";
+import { generateReference } from "@/lib/db/contact";
+import { notifyTeam } from "@/lib/notifications/team";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -21,19 +22,13 @@ export async function POST(request: Request) {
   }
 
   const input = parsed.data;
-  const result = await createBooking(input);
-  if (!result.ok) {
-    return NextResponse.json({ ok: false, error: "sheetdb_error" }, { status: 502 });
-  }
-
-  // Historique pour l'espace client. Un échec ici ne doit pas faire échouer la réservation
-  // (elle est déjà enregistrée dans Google Sheets pour l'équipe).
+  const reference = generateReference("RERA-BK");
   const user = await getCurrentUser();
   let claimToken: string | null = null;
   try {
     ({ claimToken } = await recordReservation(
       {
-        reference: result.reference,
+        reference,
         kind: "booking",
         fullName: input.fullName,
         email: input.email,
@@ -57,13 +52,24 @@ export async function POST(request: Request) {
       user?.id ?? null
     ));
   } catch (error) {
-    console.error("[bookings] enregistrement Postgres impossible", error);
+    console.error("[bookings] enregistrement impossible", error);
+    return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
 
-  return NextResponse.json({
-    ok: true,
-    reference: result.reference,
-    signedIn: Boolean(user),
-    claimToken,
-  });
+  after(() =>
+    notifyTeam({
+      subject: `Nouvelle réservation : ${input.offerName}`,
+      lines: [
+        ["Référence", reference],
+        ["Offre", input.offerName],
+        ["Client", input.fullName],
+        ["E-mail", input.email],
+        ["Téléphone", input.phone],
+        ["Arrivée", input.startDate],
+      ],
+      adminPath: `/fr/admin/reservations/${encodeURIComponent(reference)}`,
+    })
+  );
+
+  return NextResponse.json({ ok: true, reference, signedIn: Boolean(user), claimToken });
 }

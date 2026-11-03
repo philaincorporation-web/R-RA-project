@@ -11,6 +11,12 @@ const statusLabels: Record<string, { fr: string; en: string; tone: string }> = {
   confirmed: { fr: "Confirmée", en: "Confirmed", tone: "bg-rera-emerald-100 text-rera-emerald-700 dark:bg-rera-emerald-400/15 dark:text-rera-emerald-300" },
   paid: { fr: "Payée", en: "Paid", tone: "bg-rera-emerald-100 text-rera-emerald-700 dark:bg-rera-emerald-400/15 dark:text-rera-emerald-300" },
   cancelled: { fr: "Annulée", en: "Cancelled", tone: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300" },
+  completed: { fr: "Terminée", en: "Completed", tone: "bg-rera-navy-100 text-rera-navy-700 dark:bg-white/10 dark:text-rera-mist" },
+  new: { fr: "Demande reçue", en: "Request received", tone: "bg-rera-gold-100 text-rera-gold-700 dark:bg-rera-gold-400/15 dark:text-rera-gold-300" },
+  in_progress: { fr: "En cours de traitement", en: "In progress", tone: "bg-rera-lagoon-100 text-rera-lagoon-700 dark:bg-rera-lagoon-400/15 dark:text-rera-lagoon-200" },
+  quote_sent: { fr: "Devis envoyé", en: "Quote sent", tone: "bg-rera-lagoon-100 text-rera-lagoon-700 dark:bg-rera-lagoon-400/15 dark:text-rera-lagoon-200" },
+  accepted: { fr: "Acceptée", en: "Accepted", tone: "bg-rera-emerald-100 text-rera-emerald-700 dark:bg-rera-emerald-400/15 dark:text-rera-emerald-300" },
+  refused: { fr: "Refusée", en: "Declined", tone: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300" },
 };
 
 export function StatusBadge({ status, locale }: { status: string; locale: AppLocale }) {

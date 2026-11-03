@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validation/schemas";
-import { createContactMessage } from "@/lib/sheetdb/mutations";
+import { generateReference, insertContactMessage } from "@/lib/db/contact";
+import { notifyTeam } from "@/lib/notifications/team";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -18,10 +19,27 @@ export async function POST(request: Request) {
     );
   }
 
-  const result = await createContactMessage(parsed.data);
-  if (!result.ok) {
-    return NextResponse.json({ ok: false, error: "sheetdb_error" }, { status: 502 });
+  const input = parsed.data;
+  const reference = generateReference("RERA-MSG");
+  try {
+    await insertContactMessage({ reference, ...input });
+  } catch (error) {
+    console.error("[contact] enregistrement impossible", error);
+    return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, reference: result.reference });
+  after(() =>
+    notifyTeam({
+      subject: `Nouveau message : ${input.subject}`,
+      lines: [
+        ["Référence", reference],
+        ["De", input.fullName],
+        ["E-mail", input.email],
+        ["Sujet", input.subject],
+      ],
+      adminPath: `/fr/admin/messages/${encodeURIComponent(reference)}`,
+    })
+  );
+
+  return NextResponse.json({ ok: true, reference });
 }

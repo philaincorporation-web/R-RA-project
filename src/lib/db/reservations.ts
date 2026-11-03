@@ -3,8 +3,8 @@ import { createHash, randomBytes } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 
 /**
- * Historique des réservations / demandes Business dans Postgres (Neon),
- * utilisé par l'espace client. Google Sheets reste la source de travail de l'équipe.
+ * Réservations et demandes Business dans Postgres (Neon) : source unique,
+ * utilisée par le site, l'espace client et le back-office.
  */
 
 function db() {
@@ -56,10 +56,10 @@ export async function recordReservation(input: ReservationRecord, userId: string
   const claimToken = userId ? null : randomBytes(24).toString("base64url");
   await db()`
     INSERT INTO reservations
-      (reference, kind, user_id, full_name, email, phone, country, title,
+      (reference, kind, status, user_id, full_name, email, phone, country, title,
        start_date, end_date, total_estimate, currency, summary, claim_token_hash, claimed_at)
     VALUES
-      (${input.reference}, ${input.kind}, ${userId}, ${input.fullName}, ${input.email},
+      (${input.reference}, ${input.kind}, ${input.kind === "business" ? "new" : "pending"}, ${userId}, ${input.fullName}, ${input.email},
        ${input.phone ?? null}, ${input.country ?? null}, ${input.title},
        ${input.startDate || null}, ${input.endDate || null},
        ${input.totalEstimate ?? null}, ${input.currency ?? null},

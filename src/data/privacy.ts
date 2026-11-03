@@ -53,7 +53,7 @@ export const privacyContent = {
         span: "lg" as const,
         icon: "share",
         title: "Partage des données",
-        text: "RÈRA ne vend ni ne partage vos données à des tiers à des fins commerciales. Elles transitent uniquement par nos prestataires techniques nécessaires au fonctionnement du site : Google Sheets / SheetDB (stockage des réservations) et Vercel Inc. (hébergement).",
+        text: "RÈRA ne vend ni ne partage vos données à des tiers à des fins commerciales. Elles transitent uniquement par nos prestataires techniques nécessaires au fonctionnement du site : Neon (base de données, dont les réservations et les messages), Vercel Inc. (hébergement) et Resend (notifications e-mail adressées à notre équipe).",
       },
       {
         id: "cookies",
@@ -121,7 +121,7 @@ export const privacyContent = {
         span: "lg" as const,
         icon: "share",
         title: "Data sharing",
-        text: "RÈRA does not sell or share your data with third parties for commercial purposes. It only passes through the technical providers required to run the site: Google Sheets / SheetDB (booking storage) and Vercel Inc. (hosting).",
+        text: "RÈRA does not sell or share your data with third parties for commercial purposes. It only passes through the technical providers required to run the site: Neon (database, including bookings and messages), Vercel Inc. (hosting) and Resend (email notifications sent to our team).",
       },
       {
         id: "cookies",
