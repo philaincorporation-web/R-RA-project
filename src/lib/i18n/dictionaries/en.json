@@ -64,7 +64,8 @@
     "duration": "Duration",
     "availability": "Availability",
     "cta": "Discover",
-    "bookCta": "Book this activity"
+    "bookCta": "Book this activity",
+    "weatherCta": "Weather and sea conditions in Pointe Denis"
   },
   "accommodation": {
     "eyebrow": "Accommodation",
@@ -146,7 +147,8 @@
     "eyebrow": "Access",
     "title": "How to get to Pointe Denis",
     "subtitle": "Departure by boat shuttle from Libreville, about a 30-minute crossing.",
-    "cta": "See practical information"
+    "cta": "See practical information",
+    "weatherCta": "Check the weather and sea"
   },
   "finalCta": {
     "title": "Ready to live the RÈRA experience?",

@@ -1,4 +1,4 @@
-import { Compass, Ship } from "lucide-react";
+import { CloudSun, Compass, Ship } from "lucide-react";
 import { Container, SectionHeading } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/aceternity/reveal";
@@ -22,10 +22,16 @@ export function MapAccessSection({ locale, dict }: { locale: AppLocale; dict: Di
               <Ship className="h-5 w-5 text-rera-lagoon-500" />
               <span>Libreville → Pointe Denis · ~30 min</span>
             </div>
-            <Button href={`/${locale}/practical-info`} variant="secondary" className="mt-8">
-              <Compass className="h-4 w-4" />
-              {dict.map.cta}
-            </Button>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button href={`/${locale}/practical-info`} variant="secondary">
+                <Compass className="h-4 w-4" />
+                {dict.map.cta}
+              </Button>
+              <Button href={`/${locale}/practical-info#meteo`} variant="ghost">
+                <CloudSun className="h-4 w-4" />
+                {dict.map.weatherCta}
+              </Button>
+            </div>
           </Reveal>
 
           <Reveal index={1}>

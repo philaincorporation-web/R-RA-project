@@ -7,6 +7,10 @@ import { PageHero } from "@/components/layout/page-hero";
 import { Container } from "@/components/ui/primitives";
 import { BentoGrid, BentoItem } from "@/components/ui/aceternity/bento-grid";
 import { Reveal } from "@/components/ui/aceternity/reveal";
+import { WeatherSection } from "@/components/practical-info/weather-section";
+
+// Régénère la page au plus toutes les 30 minutes (météo Open-Meteo).
+export const revalidate = 1800;
 
 const items = {
   fr: [
@@ -67,6 +71,7 @@ export default async function PracticalInfoPage({ params }: { params: Promise<{ 
           </Reveal>
         </Container>
       </section>
+      <WeatherSection locale={locale} />
     </>
   );
 }

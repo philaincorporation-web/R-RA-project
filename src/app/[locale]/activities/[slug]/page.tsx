@@ -8,6 +8,14 @@ import { formatPrice, pick } from "@/lib/utils/format";
 import { Container } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/aceternity/reveal";
+import Link from "next/link";
+import { Waves } from "lucide-react";
+
+/** Activités dépendant de l'état de la mer : on y affiche un lien vers la météo. */
+function isSeaActivity(category: string | undefined) {
+  const c = (category ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  return /nauti|mer|bateau|marin|transport/.test(c);
+}
 
 export async function generateMetadata({
   params,
@@ -74,6 +82,15 @@ export default async function ActivityDetailPage({
               <Button href={`/${locale}/booking?offer=${activity.slug}&type=activity`} className="mt-6 w-full">
                 {dict.activities.bookCta}
               </Button>
+              {isSeaActivity(activity.category) && (
+                <Link
+                  href={`/${locale}/practical-info#meteo`}
+                  className="mt-4 flex items-center justify-center gap-2 text-sm font-medium text-rera-lagoon-600 hover:underline dark:text-rera-lagoon-300"
+                >
+                  <Waves className="h-4 w-4" aria-hidden />
+                  {dict.activities.weatherCta}
+                </Link>
+              )}
             </div>
           </div>
         </div>

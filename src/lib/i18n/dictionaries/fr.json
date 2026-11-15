@@ -64,7 +64,8 @@
     "duration": "Durée",
     "availability": "Disponibilité",
     "cta": "Découvrir",
-    "bookCta": "Réserver cette activité"
+    "bookCta": "Réserver cette activité",
+    "weatherCta": "Météo et état de la mer à Pointe Denis"
   },
   "accommodation": {
     "eyebrow": "Hébergements",
@@ -146,7 +147,8 @@
     "eyebrow": "Accès",
     "title": "Comment venir à Pointe Denis",
     "subtitle": "Départ en navette maritime depuis Libreville, traversée d'environ 30 minutes.",
-    "cta": "Voir les infos pratiques"
+    "cta": "Voir les infos pratiques",
+    "weatherCta": "Voir la météo et l’état de la mer"
   },
   "finalCta": {
     "title": "Prêt à vivre l'expérience RÈRA ?",
