@@ -118,7 +118,11 @@ export function createAccessToken(referenceInput: string) {
 
 /** Le visiteur a-t-il vérifié son accès à cette référence ? */
 export async function hasTrackingAccess(referenceInput: string) {
-  const token = (await cookies()).get(TRACK_COOKIE)?.value;
+  return verifyAccessToken((await cookies()).get(TRACK_COOKIE)?.value, referenceInput);
+}
+
+/** Vérifie un jeton d'accès (valeur du cookie) pour une référence donnée. */
+export function verifyAccessToken(token: string | undefined, referenceInput: string) {
   if (!token) return false;
   const [reference, expires, signature] = token.split(".");
   if (!reference || !expires || !signature) return false;

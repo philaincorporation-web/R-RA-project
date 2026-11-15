@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, CalendarCheck2, CalendarX2, CircleHelp, FileSpreadsheet, Link2, Mail, Phone } from "lucide-react";
+import { ArrowLeft, Bot, CalendarCheck2, CalendarX2, CircleHelp, FileSpreadsheet, Link2, Mail, Phone } from "lucide-react";
 import type { AdminReservation } from "@/lib/admin/requests";
 import type { AvailabilityResult } from "@/lib/availability/types";
 import { statusesFor, normalizeStatus, statusLabel } from "@/lib/requests/status";
@@ -130,6 +130,12 @@ export function ReservationDetail({
                 <Link2 className="h-4 w-4 shrink-0" />
                 {r.user_id ? "Rattachée à un compte client" : "Sans compte client"}
               </li>
+              {r.source === "assistant" ? (
+                <li className="flex items-center gap-2 font-medium text-rera-lagoon-700">
+                  <Bot className="h-4 w-4 shrink-0" />
+                  Transmise via l&apos;assistant IA
+                </li>
+              ) : null}
               {r.source === "sheets" ? (
                 <li className="flex items-center gap-2 text-rera-navy-500">
                   <FileSpreadsheet className="h-4 w-4 shrink-0" />

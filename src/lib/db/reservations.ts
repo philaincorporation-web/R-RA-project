@@ -67,7 +67,7 @@ const lockKey = (offerSlug: string) => `rera-offer:${offerSlug}`;
  * Renvoie { full: true } (rien n'est enregistré) s'il ne reste plus assez de place.
  */
 export async function recordReservation(
-  input: ReservationRecord & { offerSlug?: string; units?: number; holdHours?: number },
+  input: ReservationRecord & { offerSlug?: string; units?: number; holdHours?: number; source?: "site" | "assistant" },
   userId: string | null,
   capacity?: CapacityGuard
 ): Promise<{ claimToken: string | null; full?: boolean }> {
@@ -82,7 +82,7 @@ export async function recordReservation(
     INSERT INTO reservations
       (reference, kind, status, user_id, full_name, email, phone, country, title,
        start_date, end_date, total_estimate, currency, summary, claim_token_hash, claimed_at,
-       offer_slug, units, hold_expires_at)
+       offer_slug, units, hold_expires_at, source)
     SELECT
        ${input.reference}, ${input.kind}, ${input.kind === "business" ? "new" : "pending"}, ${userId}, ${input.fullName}, ${input.email},
        ${input.phone ?? null}, ${input.country ?? null}, ${input.title},
@@ -90,7 +90,7 @@ export async function recordReservation(
        ${input.totalEstimate ?? null}::numeric, ${input.currency ?? null},
        ${JSON.stringify(input.summary)}::jsonb,
        ${claimToken ? hashToken(claimToken) : null}, ${userId ? new Date().toISOString() : null}::timestamptz,
-       ${offerSlug}, ${units}, ${holdUntil}::timestamptz
+       ${offerSlug}, ${units}, ${holdUntil}::timestamptz, ${input.source ?? "site"}
      WHERE NOT ${guarded}::boolean OR NOT EXISTS (
        SELECT 1
          FROM generate_series(${capacity?.start ?? null}::date, ${capacity?.end ?? null}::date - 1, interval '1 day') AS n(night),

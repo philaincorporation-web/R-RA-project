@@ -8,6 +8,9 @@ import { Navbar } from "@/components/navigation/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HtmlLang } from "@/components/layout/html-lang";
 import { HideSiteChrome } from "@/components/layout/hide-site-chrome";
+import { AssistantWidget } from "@/components/assistant/assistant-widget";
+import { isAssistantEnabled } from "@/lib/assistant/config";
+import { siteConfig } from "@/data";
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -90,6 +93,15 @@ export default async function LocaleLayout({
       <HideSiteChrome>
         <Footer locale={locale} dict={dict} />
       </HideSiteChrome>
+      {/* Assistant IA : affiché seulement si ASSISTANT_ENABLED=true (lu au build, redéployer après changement). */}
+      {isAssistantEnabled() ? (
+        <HideSiteChrome>
+          <AssistantWidget
+            locale={locale}
+            contact={{ phone: siteConfig.contact.phone, whatsapp: siteConfig.contact.whatsapp, email: siteConfig.contact.email }}
+          />
+        </HideSiteChrome>
+      ) : null}
     </>
   );
 }

@@ -50,7 +50,16 @@ export default async function ReservationsPage({
             title={r.full_name}
             subtitle={`${kindLabel(r, "fr")} · ${r.title}`}
             meta={`${dateRange(r, "fr")} · ${totalLabel(r, "fr")} · ${r.reference}`}
-            badge={<AdminStatusBadge kind="booking" status={r.status} />}
+            badge={
+              <>
+                <AdminStatusBadge kind="booking" status={r.status} />
+                {r.source === "assistant" ? (
+                  <span className="inline-flex shrink-0 rounded-full bg-rera-lagoon-100 px-2.5 py-1 text-xs font-semibold text-rera-lagoon-700">
+                    Assistant IA
+                  </span>
+                ) : null}
+              </>
+            }
           />
         ))}
       </RequestList>

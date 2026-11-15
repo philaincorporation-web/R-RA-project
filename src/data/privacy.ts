@@ -53,7 +53,7 @@ export const privacyContent = {
         span: "lg" as const,
         icon: "share",
         title: "Partage des données",
-        text: "RÈRA ne vend ni ne partage vos données à des tiers à des fins commerciales. Elles transitent uniquement par nos prestataires techniques nécessaires au fonctionnement du site : Neon (base de données, dont les réservations et les messages), Vercel Inc. (hébergement) et Google (Gmail, pour les e-mails de confirmation et les notifications adressées à notre équipe).",
+        text: "RÈRA ne vend ni ne partage vos données à des tiers à des fins commerciales. Elles transitent uniquement par nos prestataires techniques nécessaires au fonctionnement du site : Neon (base de données, dont les réservations et les messages), Vercel Inc. (hébergement) , Google (Gmail, pour les e-mails de confirmation et les notifications adressées à notre équipe) et Google (Gemini, pour faire fonctionner l’assistant IA du site : les messages que vous lui écrivez lui sont transmis, ils ne sont pas conservés par RÈRA).",
       },
       {
         id: "cookies",
@@ -121,7 +121,7 @@ export const privacyContent = {
         span: "lg" as const,
         icon: "share",
         title: "Data sharing",
-        text: "RÈRA does not sell or share your data with third parties for commercial purposes. It only passes through the technical providers required to run the site: Neon (database, including bookings and messages), Vercel Inc. (hosting) and Google (Gmail, for confirmation emails and notifications sent to our team).",
+        text: "RÈRA does not sell or share your data with third parties for commercial purposes. It only passes through the technical providers required to run the site: Neon (database, including bookings and messages), Vercel Inc. (hosting) , Google (Gmail, for confirmation emails and notifications sent to our team) and Google (Gemini, to run the website’s AI assistant: the messages you write to it are sent to Google and are not stored by RÈRA).",
       },
       {
         id: "cookies",

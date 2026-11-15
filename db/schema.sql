@@ -233,3 +233,16 @@ CREATE TABLE IF NOT EXISTS tracking_codes (
 
 CREATE INDEX IF NOT EXISTS tracking_codes_reference_idx ON tracking_codes (reference, created_at DESC);
 CREATE INDEX IF NOT EXISTS tracking_codes_ip_idx ON tracking_codes (ip_hash, created_at DESC)
+;
+
+-- ============================================================
+--  ASSISTANT IA : compteur d'usage (limites anti-abus et maîtrise des coûts)
+--  Aucun contenu de conversation n'est stocké : seulement un nombre de messages
+--  par visiteur (empreinte anonyme de l'adresse IP) et par jour.
+-- ============================================================
+CREATE TABLE IF NOT EXISTS assistant_usage (
+  day           date NOT NULL,
+  visitor_hash  text NOT NULL,
+  messages      integer NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, visitor_hash)
+)

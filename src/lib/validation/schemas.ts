@@ -20,6 +20,8 @@ export const bookingSchema = z
   paymentMethod: z.string().max(40).optional(),
   totalEstimate: z.coerce.number().min(0),
   currency: z.string().default("XAF"),
+  /** Origine de la demande, affichée dans le back-office. */
+  source: z.enum(["site", "assistant"]).optional(),
   })
   .refine(
     (d) => {

@@ -67,6 +67,7 @@ export async function POST(request: Request) {
         offerSlug: input.offerSlug,
         units: unitsFor(inventory, guests),
         holdHours: HOLD_HOURS,
+        source: input.source ?? "site",
         fullName: input.fullName,
         email: input.email,
         phone: input.phone,
