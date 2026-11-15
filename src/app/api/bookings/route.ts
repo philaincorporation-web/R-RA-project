@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/server";
 import { recordReservation } from "@/lib/db/reservations";
 import { generateReference } from "@/lib/db/contact";
 import { notifyTeam } from "@/lib/notifications/team";
+import { acknowledgeVisitor } from "@/lib/notifications/visitor";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -56,19 +57,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
 
+  const travellers = `${input.adults} adulte(s)${input.children ? `, ${input.children} enfant(s)` : ""}`;
   after(() =>
-    notifyTeam({
-      subject: `Nouvelle réservation : ${input.offerName}`,
-      lines: [
-        ["Référence", reference],
-        ["Offre", input.offerName],
-        ["Client", input.fullName],
-        ["E-mail", input.email],
-        ["Téléphone", input.phone],
-        ["Arrivée", input.startDate],
-      ],
-      adminPath: `/fr/admin/reservations/${encodeURIComponent(reference)}`,
-    })
+    Promise.all([
+      notifyTeam({
+        subject: `Nouvelle réservation : ${input.offerName}`,
+        lines: [
+          ["Référence", reference],
+          ["Offre", input.offerName],
+          ["Client", input.fullName],
+          ["E-mail", input.email],
+          ["Téléphone", input.phone],
+          ["Arrivée", input.startDate],
+          ["Départ", input.endDate ?? "—"],
+          ["Voyageurs", travellers],
+        ],
+        adminPath: `/fr/admin/reservations/${encodeURIComponent(reference)}`,
+        replyTo: input.email,
+      }),
+      acknowledgeVisitor({
+        to: input.email,
+        name: input.fullName,
+        what: "votre demande de réservation",
+        reference,
+        lines: [
+          ["Offre", input.offerName],
+          ["Arrivée", input.startDate],
+          ["Départ", input.endDate ?? "—"],
+          ["Voyageurs", travellers],
+        ],
+      }),
+    ])
   );
 
   return NextResponse.json({ ok: true, reference, signedIn: Boolean(user), claimToken });

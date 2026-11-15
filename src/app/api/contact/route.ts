@@ -2,6 +2,7 @@ import { after, NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validation/schemas";
 import { generateReference, insertContactMessage } from "@/lib/db/contact";
 import { notifyTeam } from "@/lib/notifications/team";
+import { acknowledgeVisitor } from "@/lib/notifications/visitor";
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -29,16 +30,30 @@ export async function POST(request: Request) {
   }
 
   after(() =>
-    notifyTeam({
-      subject: `Nouveau message : ${input.subject}`,
-      lines: [
-        ["Référence", reference],
-        ["De", input.fullName],
-        ["E-mail", input.email],
-        ["Sujet", input.subject],
-      ],
-      adminPath: `/fr/admin/messages/${encodeURIComponent(reference)}`,
-    })
+    Promise.all([
+      notifyTeam({
+        subject: `Nouveau message : ${input.subject}`,
+        lines: [
+          ["Référence", reference],
+          ["De", input.fullName],
+          ["E-mail", input.email],
+          ["Sujet", input.subject],
+          ["Message", input.message],
+        ],
+        adminPath: `/fr/admin/messages/${encodeURIComponent(reference)}`,
+        replyTo: input.email,
+      }),
+      acknowledgeVisitor({
+        to: input.email,
+        name: input.fullName,
+        what: "votre message",
+        reference,
+        lines: [
+          ["Sujet", input.subject],
+          ["Message", input.message],
+        ],
+      }),
+    ])
   );
 
   return NextResponse.json({ ok: true, reference });

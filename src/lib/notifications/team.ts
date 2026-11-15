@@ -1,39 +1,34 @@
 import "server-only";
 import { getSiteUrl } from "@/lib/utils/site-url";
-
-const escapeHtml = (value: string) =>
-  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+import { BRAND, escapeHtml, layout, rowsTable, rowsText, sendMail, teamRecipients } from "./mailer";
 
 /**
- * Prévient l'équipe d'une nouvelle demande (via l'API Resend).
- * Facultatif : sans RESEND_API_KEY ou sans destinataire, rien n'est envoyé.
+ * Prévient l'équipe d'une nouvelle demande (via Gmail).
+ * Destinataires : CONTACT_NOTIFICATION_EMAIL (séparés par des virgules), sinon GMAIL_USER.
+ * « Répondre » écrit directement au visiteur (replyTo).
  * Ne lève jamais d'erreur : la demande est déjà enregistrée dans Neon.
  */
-export async function notifyTeam(input: { subject: string; lines: [string, string][]; adminPath: string }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_NOTIFICATION_EMAIL;
-  if (!apiKey || !to) return;
+export async function notifyTeam(input: {
+  subject: string;
+  lines: [string, string][];
+  adminPath: string;
+  replyTo?: string;
+}) {
+  const to = teamRecipients();
+  if (to.length === 0) return;
 
   const url = `${getSiteUrl().replace(/\/$/, "")}${input.adminPath}`;
-  const rows = input.lines
-    .map(([label, value]) => `<tr><td style="padding:4px 12px 4px 0;color:#456B8A">${escapeHtml(label)}</td><td style="padding:4px 0">${escapeHtml(value)}</td></tr>`)
-    .join("");
+  const content = `
+<h2 style="color:${BRAND.navy};margin:0 0 16px;font-size:18px">${escapeHtml(input.subject)}</h2>
+${rowsTable(input.lines)}
+<p style="margin:0 0 16px"><a href="${escapeHtml(url)}" style="display:inline-block;background:${BRAND.navy};color:#ffffff;padding:10px 22px;border-radius:24px;text-decoration:none;font-size:14px;font-weight:600">Ouvrir dans le back-office</a></p>
+${input.replyTo ? `<p style="color:${BRAND.muted};font-size:13px;margin:0">Répondez directement à cet e-mail pour écrire au demandeur.</p>` : ""}`;
 
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        from: process.env.RESEND_FROM_EMAIL || "RÈRA <onboarding@resend.dev>",
-        to: to.split(",").map((a) => a.trim()).filter(Boolean),
-        subject: input.subject.replace(/[\r\n]+/g, " ").slice(0, 200),
-        html: `<div style="font-family:Arial,sans-serif;color:#0D2B45"><table>${rows}</table><p><a href="${escapeHtml(url)}">Ouvrir dans le back-office</a></p></div>`,
-        text: `${input.lines.map(([l, v]) => `${l} : ${v}`).join("\n")}\n\n${url}`,
-      }),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) console.error("[notifications] envoi refusé", res.status);
-  } catch (error) {
-    console.error("[notifications] envoi impossible", error);
-  }
+  await sendMail({
+    to,
+    replyTo: input.replyTo,
+    subject: `[${BRAND.name}] ${input.subject}`,
+    html: layout(input.subject, content),
+    text: `${input.subject}\n\n${rowsText(input.lines)}\n\nBack-office : ${url}`,
+  });
 }

@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/server";
 import { recordReservation } from "@/lib/db/reservations";
 import { generateReference } from "@/lib/db/contact";
 import { notifyTeam } from "@/lib/notifications/team";
+import { acknowledgeVisitor } from "@/lib/notifications/visitor";
 import { businessServices } from "@/data/business-services";
 
 export async function POST(request: Request) {
@@ -54,18 +55,32 @@ export async function POST(request: Request) {
   }
 
   after(() =>
-    notifyTeam({
-      subject: `Nouvelle demande Business : ${title}`,
-      lines: [
-        ["Référence", reference],
-        ["Rubrique", title],
-        ["Contact", input.contactName],
-        ["Organisation", input.organization || "—"],
-        ["E-mail", input.email],
-        ["Téléphone", input.phone],
-      ],
-      adminPath: `/fr/admin/business/${encodeURIComponent(reference)}`,
-    })
+    Promise.all([
+      notifyTeam({
+        subject: `Nouvelle demande Business : ${title}`,
+        lines: [
+          ["Référence", reference],
+          ["Rubrique", title],
+          ["Contact", input.contactName],
+          ["Organisation", input.organization || "—"],
+          ["E-mail", input.email],
+          ["Téléphone", input.phone],
+        ],
+        adminPath: `/fr/admin/business/${encodeURIComponent(reference)}`,
+        replyTo: input.email,
+      }),
+      acknowledgeVisitor({
+        to: input.email,
+        name: input.contactName,
+        what: "votre demande",
+        reference,
+        lines: [
+          ["Rubrique", title],
+          ["Organisation", input.organization || "—"],
+          ["Date souhaitée", input.preferredDate || "—"],
+        ],
+      }),
+    ])
   );
 
   return NextResponse.json({ ok: true, reference, signedIn: Boolean(user), claimToken });
