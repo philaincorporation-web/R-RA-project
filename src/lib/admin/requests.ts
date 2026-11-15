@@ -83,6 +83,32 @@ export async function getReservationKind(reference: string) {
   return ((rows[0] as { kind: "booking" | "business" } | undefined)?.kind) ?? null;
 }
 
+/** Données utiles au changement de statut d'une réservation (stock + e-mail au client). */
+export async function getBookingForStatus(reference: string) {
+  const rows = await db()`
+    SELECT reference, status, full_name, email, title, units,
+           COALESCE(offer_slug, summary->>'offerSlug') AS offer_slug,
+           to_char(start_date, 'YYYY-MM-DD') AS start_date,
+           to_char(end_date, 'YYYY-MM-DD') AS end_date
+      FROM reservations WHERE reference = ${reference} AND kind = 'booking'
+  `;
+  return (
+    (rows[0] as
+      | {
+          reference: string;
+          status: string;
+          full_name: string;
+          email: string;
+          title: string;
+          units: number;
+          offer_slug: string | null;
+          start_date: string | null;
+          end_date: string | null;
+        }
+      | undefined) ?? null
+  );
+}
+
 type UpdateResult = { previousStatus: string; previousNotes: string } | null;
 
 /** Mise à jour atomique : renvoie null si la fiche a changé depuis son affichage (ou n'existe plus). */

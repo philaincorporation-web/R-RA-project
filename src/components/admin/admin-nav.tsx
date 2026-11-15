@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, CalendarCheck, History, LayoutDashboard, Mail, ShieldCheck, Users } from "lucide-react";
+import { Building2, CalendarCheck, CalendarRange, History, LayoutDashboard, Mail, ShieldCheck, Users } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 const ICONS = {
   dashboard: LayoutDashboard,
   reservations: CalendarCheck,
+  availability: CalendarRange,
   business: Building2,
   messages: Mail,
   team: Users,

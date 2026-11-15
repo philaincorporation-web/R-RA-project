@@ -33,6 +33,7 @@ export default async function AdminLayout({
   const items: AdminNavItem[] = [{ href: base, label: "Tableau de bord", icon: "dashboard", exact: true }];
   const counts = await getRequestCounts();
   if (can(ctx, "reservations.view")) items.push({ href: `${base}/reservations`, label: "Réservations", icon: "reservations", badge: counts.bookings });
+  if (can(ctx, "reservations.view")) items.push({ href: `${base}/availability`, label: "Disponibilités", icon: "availability" });
   if (can(ctx, "business.view")) items.push({ href: `${base}/business`, label: "Demandes Business", icon: "business", badge: counts.business });
   if (can(ctx, "messages.view")) items.push({ href: `${base}/messages`, label: "Messages", icon: "messages", badge: counts.messages });
   if (can(ctx, "team.manage")) items.push({ href: `${base}/team`, label: "Équipe", icon: "team" });

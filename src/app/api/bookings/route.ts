@@ -1,7 +1,9 @@
 import { after, NextResponse } from "next/server";
 import { bookingSchema } from "@/lib/validation/schemas";
 import { getCurrentUser } from "@/lib/auth/server";
-import { recordReservation } from "@/lib/db/reservations";
+import { recordReservation, type CapacityGuard } from "@/lib/db/reservations";
+import { checkAvailability, getInventory, isManaged, periodFor, unitsFor } from "@/lib/availability/engine";
+import { HOLD_HOURS, type OfferInventory } from "@/lib/availability/types";
 import { generateReference } from "@/lib/db/contact";
 import { notifyTeam } from "@/lib/notifications/team";
 import { acknowledgeVisitor } from "@/lib/notifications/visitor";
@@ -24,13 +26,47 @@ export async function POST(request: Request) {
 
   const input = parsed.data;
   const reference = generateReference("RERA-BK");
+  const guests = input.adults + input.children;
+
+  // Disponibilité : vérifiée ici pour un message clair, puis revérifiée sous verrou à l'enregistrement.
+  let inventory: OfferInventory | null;
+  let capacity: CapacityGuard | undefined;
+  try {
+    inventory = await getInventory(input.offerSlug);
+    if (inventory && inventory.offerType !== input.offerType) inventory = null;
+    const check = await checkAvailability({
+      offerSlug: input.offerSlug,
+      startDate: input.startDate,
+      endDate: input.endDate,
+      guests,
+      inventory,
+    });
+    if (check.status === "invalid" && check.reason !== "past_date") {
+      return NextResponse.json({ ok: false, error: "invalid_period", reason: check.reason, minNights: check.minNights }, { status: 422 });
+    }
+    if (check.status === "unavailable") {
+      return NextResponse.json({ ok: false, error: "unavailable", reason: check.reason }, { status: 409 });
+    }
+    if (isManaged(inventory)) {
+      const period = periodFor(inventory.mode, input.startDate, input.endDate);
+      capacity = { ...period, unitsTotal: inventory.unitsTotal };
+    }
+  } catch (error) {
+    console.error("[bookings] vérification de disponibilité impossible", error);
+    return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
+  }
+
   const user = await getCurrentUser();
   let claimToken: string | null = null;
   try {
-    ({ claimToken } = await recordReservation(
+    let full: boolean | undefined;
+    ({ claimToken, full } = await recordReservation(
       {
         reference,
         kind: "booking",
+        offerSlug: input.offerSlug,
+        units: unitsFor(inventory, guests),
+        holdHours: HOLD_HOURS,
         fullName: input.fullName,
         email: input.email,
         phone: input.phone,
@@ -50,8 +86,11 @@ export async function POST(request: Request) {
           notes: input.notes ?? "",
         },
       },
-      user?.id ?? null
+      user?.id ?? null,
+      capacity
     ));
+    // Un autre client a pris la dernière place entre la vérification et l'enregistrement.
+    if (full) return NextResponse.json({ ok: false, error: "unavailable", reason: "full" }, { status: 409 });
   } catch (error) {
     console.error("[bookings] enregistrement impossible", error);
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });

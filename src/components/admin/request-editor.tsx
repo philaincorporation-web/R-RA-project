@@ -14,6 +14,7 @@ export function RequestEditor({
   status,
   notes,
   statuses,
+  notifyOption = false,
 }: {
   locale: string;
   target: "reservation" | "message";
@@ -22,6 +23,8 @@ export function RequestEditor({
   status: string;
   notes: string;
   statuses: readonly { value: string; label: string }[];
+  /** Affiche « Prévenir le client par e-mail » (réservations : confirmation, refus, annulation). */
+  notifyOption?: boolean;
 }) {
   const [state, action] = useActionState(updateRequestAction, null);
   const [currentStatus, setCurrentStatus] = useState(status);
@@ -66,6 +69,15 @@ export function RequestEditor({
           className={`${adminInput} h-auto py-2.5`}
         />
       </div>
+      {notifyOption ? (
+        <label className="flex items-start gap-2.5 text-sm text-rera-navy-700">
+          <input type="checkbox" name="notifyClient" defaultChecked className="mt-0.5 h-4 w-4 rounded border-rera-navy-300" />
+          <span>
+            Prévenir le client par e-mail
+            <span className="block text-xs text-rera-navy-400">Envoyé seulement en cas de confirmation, de refus ou d&apos;annulation.</span>
+          </span>
+        </label>
+      ) : null}
       <FormMessage state={state} />
       <SubmitButton className="w-full">Enregistrer</SubmitButton>
     </form>

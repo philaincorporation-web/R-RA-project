@@ -10,6 +10,7 @@ import { formatDate, formatPrice, pick } from "@/lib/utils/format";
 import { estimateTotal } from "@/lib/pricing";
 import { additionalOptions, paymentMethods } from "@/data/booking-options";
 import { AccountPrompt } from "@/components/account/account-prompt";
+import { AvailabilityBadge, availabilityBlocks, useAvailability } from "./availability-badge";
 import type { AppLocale } from "@/lib/i18n/config";
 import type { Dictionary } from "@/lib/i18n/get-dictionary";
 import type { Accommodation, Activity, Package } from "@/types";
@@ -135,6 +136,19 @@ export function BookingStepper({
   const travelers = adults + children;
   const overCapacity = Boolean(isAccommodation && selectedOffer?.capacity && travelers > selectedOffer.capacity);
 
+  // Disponibilité en direct (indicative : le serveur revérifie sous verrou à l'envoi).
+  const datesReady = Boolean(startDate) && startDate >= todayIso() && (!isAccommodation || nights > 0);
+  const { info: availability, loading: availabilityLoading } = useAvailability({
+    offer: selectedOffer?.slug,
+    type: selectedOffer?.type,
+    start: startDate,
+    end: isAccommodation ? endDate : undefined,
+    guests: travelers,
+    enabled: datesReady,
+  });
+  const blockedByAvailability = availabilityBlocks(availability);
+  const [errorKind, setErrorKind] = useState<"generic" | "unavailable">("generic");
+
   // Hébergement : prix par nuit (et non par personne). Packages/activités : prix par personne.
   const total = !selectedOffer
     ? 0
@@ -170,7 +184,7 @@ export function BookingStepper({
 
   function canProceed() {
     if (step === 0) return Boolean(selectedOffer);
-    if (step === 1) return Boolean(startDate) && startDate >= todayIso() && (!isAccommodation || nights > 0);
+    if (step === 1 || step === 2) return datesReady && !blockedByAvailability;
     if (step === 5)
       return (
         fullName.trim().length > 1 &&
@@ -223,12 +237,18 @@ export function BookingStepper({
         body: JSON.stringify(payload),
       });
       const json = await res.json();
+      if (res.status === 409 && json.error === "unavailable") {
+        setErrorKind("unavailable");
+        setStatus("error");
+        return;
+      }
       if (!res.ok || !json.ok) throw new Error("failed");
       setReference(json.reference ?? null);
       setAccount({ signedIn: Boolean(json.signedIn), claimToken: json.claimToken ?? null });
       setStatus("success");
       topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch {
+      setErrorKind("generic");
       setStatus("error");
     }
   }
@@ -247,9 +267,17 @@ export function BookingStepper({
         </h3>
         <p className="text-sm text-rera-navy-500 dark:text-rera-mist/70">{dict.booking.labels.successText}</p>
         {reference ? (
-          <p className="rounded-full bg-rera-lagoon-50 px-4 py-1.5 text-xs font-semibold text-rera-lagoon-700 dark:bg-white/10 dark:text-rera-lagoon-200">
-            {reference}
-          </p>
+          <>
+            <p className="rounded-full bg-rera-lagoon-50 px-4 py-1.5 text-xs font-semibold text-rera-lagoon-700 dark:bg-white/10 dark:text-rera-lagoon-200">
+              {reference}
+            </p>
+            <a
+              href={`/${locale}/track?ref=${encodeURIComponent(reference)}`}
+              className="text-sm font-medium text-rera-lagoon-700 hover:underline dark:text-rera-lagoon-300"
+            >
+              {fr ? "Suivre ma demande avec cette référence" : "Track my request with this reference"}
+            </a>
+          </>
         ) : null}
         <AccountPrompt
           locale={locale}
@@ -427,6 +455,7 @@ export function BookingStepper({
                     {nights} {fr ? (nights > 1 ? "nuits" : "nuit") : nights > 1 ? "nights" : "night"}
                   </p>
                 ) : null}
+                <AvailabilityBadge info={availability} loading={availabilityLoading} fr={fr} />
               </div>
             ) : null}
 
@@ -464,6 +493,7 @@ export function BookingStepper({
                       : `For more than ${MAX_TRAVELERS} travelers, contact RÈRA Business for a group quote.`}
                   </p>
                 ) : null}
+                <AvailabilityBadge info={availability} loading={availabilityLoading} fr={fr} />
               </div>
             ) : null}
 
@@ -706,7 +736,13 @@ export function BookingStepper({
                       </div>
 
                       {status === "error" ? (
-                        <p className="mt-4 text-sm text-red-500">{dict.common.error}</p>
+                        <p className="mt-4 text-sm text-red-500">
+                          {errorKind === "unavailable"
+                            ? fr
+                              ? "Désolé, la dernière place vient d'être réservée pour ces dates. Revenez à l'étape « Date » pour choisir d'autres dates."
+                              : "Sorry, the last spot for these dates has just been booked. Go back to the “Date” step to pick other dates."
+                            : dict.common.error}
+                        </p>
                       ) : null}
                     </div>
                   </div>

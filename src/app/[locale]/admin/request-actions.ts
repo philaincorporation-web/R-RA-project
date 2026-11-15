@@ -1,9 +1,19 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { isValidLocale } from "@/lib/i18n/config";
 import { can, getAdminContext, logAudit } from "@/lib/admin/server";
-import { getReservationKind, updateMessageRow, updateReservationRow } from "@/lib/admin/requests";
+import {
+  getBookingForStatus,
+  getReservationKind,
+  updateMessageRow,
+  updateReservationRow,
+} from "@/lib/admin/requests";
+import { updateStatusWithCapacity } from "@/lib/db/reservations";
+import { getInventory, isManaged, periodFor } from "@/lib/availability/engine";
+import { FIRM_STATUSES } from "@/lib/availability/types";
+import { sendStatusEmail, statusEmailFor } from "@/lib/notifications/status";
 import { isValidStatus, normalizeStatus, type RequestKind } from "@/lib/requests/status";
 import type { AdminFormState } from "./actions";
 
@@ -12,6 +22,11 @@ const FAILED = { error: "Une erreur est survenue. Réessayez dans un instant." }
 const CONFLICT = {
   error: "Cette fiche vient d'être modifiée par quelqu'un d'autre. Copiez vos notes si besoin, puis rechargez la page.",
 };
+const FULL = {
+  error:
+    "Impossible de confirmer : il ne reste plus assez de place sur ces dates (réservations confirmées ou fermeture). Consultez la page Disponibilités.",
+};
+const FIRM = new Set<string>(FIRM_STATUSES);
 const MAX_NOTES = 5000;
 
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "");
@@ -44,17 +59,52 @@ export async function updateRequestAction(_prev: AdminFormState, fd: FormData): 
     }
     if (!isValidStatus(kind, status)) return { error: "Statut invalide." };
 
-    const previous =
-      kind === "message"
-        ? await updateMessageRow(reference, version, status, notes)
-        : await updateReservationRow(reference, version, status, notes);
+    let previous: { previousStatus: string; previousNotes: string } | null;
+    const booking = kind === "booking" ? await getBookingForStatus(reference) : null;
+
+    if (booking && FIRM.has(status) && !FIRM.has(booking.status) && booking.offer_slug && booking.start_date) {
+      // Confirmation : on revérifie le stock sous verrou, dans la même transaction que la mise à jour.
+      const inventory = await getInventory(booking.offer_slug);
+      if (isManaged(inventory)) {
+        const period = periodFor(inventory.mode, booking.start_date, booking.end_date);
+        const result = await updateStatusWithCapacity({
+          reference,
+          version,
+          status,
+          notes,
+          offerSlug: booking.offer_slug,
+          capacity: { ...period, unitsTotal: inventory.unitsTotal },
+        });
+        if (result === "conflict") return CONFLICT;
+        if (result === "full") return FULL;
+        previous = result;
+      } else {
+        previous = await updateReservationRow(reference, version, status, notes);
+      }
+    } else {
+      previous =
+        kind === "message"
+          ? await updateMessageRow(reference, version, status, notes)
+          : await updateReservationRow(reference, version, status, notes);
+    }
     if (!previous) return CONFLICT;
 
     const from = normalizeStatus(kind, previous.previousStatus);
+    const emailKind = booking && fd.get("notifyClient") === "on" ? statusEmailFor(from, status) : null;
+    if (booking && emailKind) {
+      const lines: [string, string][] = [
+        ["Offre", booking.title],
+        ["Arrivée", booking.start_date ?? "—"],
+        ...(booking.end_date ? ([["Départ", booking.end_date]] as [string, string][]) : []),
+      ];
+      after(() => sendStatusEmail({ kind: emailKind, to: booking.email, name: booking.full_name, reference, lines }));
+    }
+
     const action = kind === "booking" ? "reservation.update" : kind === "business" ? "business.update" : "message.update";
     await logAudit(ctx, action, { type: kind, id: reference }, {
       ...(from !== status ? { from, to: status } : {}),
       notesChanged: previous.previousNotes !== notes,
+      ...(emailKind ? { clientEmail: emailKind } : {}),
     });
   } catch (error) {
     console.error("[admin] mise à jour demande", error);

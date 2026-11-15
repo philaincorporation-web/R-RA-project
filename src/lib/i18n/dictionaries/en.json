@@ -166,7 +166,8 @@
     "language": "Language",
     "theme": "Theme",
     "rights": "All rights reserved.",
-    "credits": "Designed, developed and maintained by"
+    "credits": "Designed, developed and maintained by",
+    "track": "Track my request"
   },
   "pages": {
     "discover": {

@@ -9,6 +9,7 @@ export const BOOKING_STATUSES = [
   { value: "confirmed", label: "Confirmée" },
   { value: "paid", label: "Payée" },
   { value: "completed", label: "Terminée" },
+  { value: "refused", label: "Refusée" },
   { value: "cancelled", label: "Annulée" },
 ] as const;
 
