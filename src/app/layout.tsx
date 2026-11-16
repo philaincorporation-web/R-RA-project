@@ -6,6 +6,7 @@ import NextTopLoader from "nextjs-toploader";
 import { NavigationOverlay } from "@/components/navigation/navigation-overlay";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { SiteAnalytics } from "@/components/analytics/site-analytics";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <ServiceWorkerRegister />   {/* ← nouvelle ligne */}
     {children}
   </ThemeProvider>
+  <SiteAnalytics />
 </body>
     </html>
   );
