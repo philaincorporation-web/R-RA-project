@@ -2,9 +2,10 @@
 
 import { Fragment, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type InferUITools, type UIDataTypes, type UIMessage } from "ai";
-import { Bot, CheckCircle2, Loader2, MessageCircle, RotateCcw, Send, Sparkles, X } from "lucide-react";
+import { CheckCircle2, Loader2, RotateCcw, Send, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import type { AppLocale } from "@/lib/i18n/config";
 import type { AssistantTools } from "@/lib/assistant/tools";
@@ -16,6 +17,21 @@ type Draft = Extract<
 >["draft"];
 
 const MAX_CHARS = 1000;
+const ASSISTANT_NAME = "Aïna";
+
+/**
+ * Photo d'Aïna (public/images/aina-avatar.png : visage recadré depuis aina.png, fond transparent).
+ */
+function AinaAvatar({ size, className }: { size: number; className?: string }) {
+  return (
+    <span
+      className={cn("relative block shrink-0 overflow-hidden rounded-full bg-gradient-to-b from-rera-lagoon-100 to-rera-navy-100", className)}
+      style={{ width: size, height: size }}
+    >
+      <Image src="/images/aina-avatar.png" alt="" width={size} height={size} className="h-full w-full object-cover" />
+    </span>
+  );
+}
 
 /** Texte de l'assistant : retours à la ligne, **gras** et liens internes (/fr/…) cliquables. */
 function RichText({ text }: { text: string }) {
@@ -206,11 +222,19 @@ export function AssistantWidget({ locale, contact }: { locale: AppLocale; contac
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 right-5 z-[60] inline-flex items-center gap-2 rounded-full bg-rera-navy-800 px-4 py-3 text-sm font-semibold text-white shadow-premium transition hover:-translate-y-0.5 hover:bg-rera-navy-700 print:hidden"
-          aria-label={fr ? "Ouvrir l'assistant RÈRA" : "Open the RÈRA assistant"}
+          className="group fixed bottom-5 right-5 z-[60] flex items-center gap-3 print:hidden"
+          aria-label={fr ? `Discuter avec ${ASSISTANT_NAME}, l'assistante RÈRA` : `Chat with ${ASSISTANT_NAME}, the RÈRA assistant`}
         >
-          <MessageCircle className="h-5 w-5 text-rera-gold-300" />
-          <span className="hidden sm:inline">{fr ? "Une question ? Assistant RÈRA" : "Questions? RÈRA assistant"}</span>
+          <span className="hidden rounded-2xl rounded-br-sm bg-white px-4 py-2.5 text-left text-sm shadow-premium transition group-hover:-translate-y-0.5 dark:bg-rera-navy-800 sm:block">
+            <span className="block font-semibold text-rera-navy-800 dark:text-white">
+              {fr ? `Bonjour, je suis ${ASSISTANT_NAME} !` : `Hi, I'm ${ASSISTANT_NAME}!`}
+            </span>
+            <span className="block text-xs text-rera-navy-500 dark:text-rera-mist/70">{fr ? "Une question sur votre séjour ?" : "Any question about your stay?"}</span>
+          </span>
+          <span className="relative">
+            <AinaAvatar size={64} className="shadow-premium ring-[3px] ring-rera-gold-400 transition group-hover:-translate-y-0.5 group-hover:ring-rera-gold-300" />
+            <span className="absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-2 border-white bg-rera-emerald-500 dark:border-rera-navy-900" aria-hidden />
+          </span>
         </button>
       ) : null}
 
@@ -221,12 +245,13 @@ export function AssistantWidget({ locale, contact }: { locale: AppLocale; contac
           className="fixed inset-0 z-[60] flex flex-col bg-white shadow-2xl dark:bg-rera-navy-900 sm:inset-auto sm:bottom-5 sm:right-5 sm:h-[600px] sm:max-h-[calc(100svh-2.5rem)] sm:w-[400px] sm:rounded-2xl sm:border sm:border-rera-navy-100 dark:sm:border-white/10 print:hidden"
         >
           <header className="flex items-center gap-3 bg-rera-navy-800 px-4 py-3 text-white sm:rounded-t-2xl">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
-              <Bot className="h-5 w-5 text-rera-gold-300" />
+            <span className="relative">
+              <AinaAvatar size={42} className="ring-2 ring-rera-gold-400" />
+              <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-rera-navy-800 bg-rera-emerald-500" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="font-semibold leading-tight">{fr ? "Assistant RÈRA" : "RÈRA assistant"}</p>
-              <p className="text-xs text-white/60">{fr ? "Offres, disponibilités, demandes" : "Offers, availability, requests"}</p>
+              <p className="font-semibold leading-tight">{ASSISTANT_NAME}</p>
+              <p className="text-xs text-white/60">{fr ? "Assistante virtuelle RÈRA · en ligne" : "RÈRA virtual assistant · online"}</p>
             </div>
             {messages.length > 0 ? (
               <button type="button" onClick={() => { setMessages([]); clearError(); }} className="rounded-lg p-2 text-white/70 hover:bg-white/10 hover:text-white" aria-label={fr ? "Nouvelle conversation" : "New conversation"}>
@@ -239,10 +264,13 @@ export function AssistantWidget({ locale, contact }: { locale: AppLocale; contac
           </header>
 
           <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
-            <div className="max-w-[88%] rounded-2xl rounded-tl-sm bg-rera-mist px-3.5 py-2.5 text-sm text-rera-navy-800 dark:bg-white/5 dark:text-rera-mist">
-              {fr
-                ? "Bonjour et bienvenue chez RÈRA ! Je peux vous présenter nos séjours, activités et hébergements à Pointe Denis, vérifier les disponibilités et préparer votre demande de réservation. Que souhaitez-vous organiser ?"
-                : "Hello and welcome to RÈRA! I can present our stays, activities and accommodation in Pointe Denis, check availability and prepare your booking request. What would you like to plan?"}
+            <div className="flex items-start gap-2">
+              <AinaAvatar size={30} />
+              <div className="max-w-[85%] rounded-2xl rounded-tl-sm bg-rera-mist px-3.5 py-2.5 text-sm text-rera-navy-800 dark:bg-white/5 dark:text-rera-mist">
+                {fr
+                  ? `Bonjour et bienvenue chez RÈRA ! Je suis ${ASSISTANT_NAME}, votre assistante virtuelle. Je peux vous présenter nos séjours, activités et hébergements à Pointe Denis, vérifier les disponibilités et préparer votre demande de réservation. Que souhaitez-vous organiser ?`
+                  : `Hello and welcome to RÈRA! I'm ${ASSISTANT_NAME}, your virtual assistant. I can present our stays, activities and accommodation in Pointe Denis, check availability and prepare your booking request. What would you like to plan?`}
+              </div>
             </div>
 
             {messages.length === 0 ? (
@@ -284,7 +312,13 @@ export function AssistantWidget({ locale, contact }: { locale: AppLocale; contac
                   }
                 }
               });
-              return <div key={m.id} className="space-y-2">{nodes}</div>;
+              if (nodes.length === 0) return null;
+              return (
+                <div key={m.id} className="flex items-start gap-2">
+                  <AinaAvatar size={30} />
+                  <div className="min-w-0 flex-1 space-y-2">{nodes}</div>
+                </div>
+              );
             })}
 
             {(() => {
