@@ -208,6 +208,11 @@ const config: Config = {
         float: "float 6s ease-in-out infinite",
         "float-delayed": "float 7s ease-in-out 1.2s infinite",
         shimmer: "shimmer 2.5s linear infinite",
+        // Assistante Aïna (bouton d'ouverture)
+        "aina-float": "aina-float 4s ease-in-out infinite",
+        "aina-halo": "aina-halo 2.8s cubic-bezier(0, 0, 0.2, 1) infinite",
+        "aina-halo-delayed": "aina-halo 2.8s cubic-bezier(0, 0, 0.2, 1) 1.4s infinite",
+        "aina-bubble": "aina-bubble 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both",
       },
 
       keyframes: {
@@ -219,6 +224,21 @@ const config: Config = {
           "50%": {
             transform: "translateY(-14px)",
           },
+        },
+
+        "aina-float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+
+        "aina-halo": {
+          "0%": { transform: "scale(1)", opacity: "0.55" },
+          "100%": { transform: "scale(1.65)", opacity: "0" },
+        },
+
+        "aina-bubble": {
+          "0%": { opacity: "0", transform: "translateX(12px) scale(0.95)" },
+          "100%": { opacity: "1", transform: "translateX(0) scale(1)" },
         },
 
         shimmer: {

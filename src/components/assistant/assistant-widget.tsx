@@ -225,15 +225,24 @@ export function AssistantWidget({ locale, contact }: { locale: AppLocale; contac
           className="group fixed bottom-5 right-5 z-[60] flex items-center gap-3 print:hidden"
           aria-label={fr ? `Discuter avec ${ASSISTANT_NAME}, l'assistante RÈRA` : `Chat with ${ASSISTANT_NAME}, the RÈRA assistant`}
         >
-          <span className="hidden rounded-2xl rounded-br-sm bg-white px-4 py-2.5 text-left text-sm shadow-premium transition group-hover:-translate-y-0.5 dark:bg-rera-navy-800 sm:block">
+          <span className="hidden animate-aina-bubble rounded-2xl rounded-br-sm bg-white px-4 py-2.5 text-left text-sm shadow-premium dark:bg-rera-navy-800 sm:block">
             <span className="block font-semibold text-rera-navy-800 dark:text-white">
               {fr ? `Bonjour, je suis ${ASSISTANT_NAME} !` : `Hi, I'm ${ASSISTANT_NAME}!`}
             </span>
             <span className="block text-xs text-rera-navy-500 dark:text-rera-mist/70">{fr ? "Une question sur votre séjour ?" : "Any question about your stay?"}</span>
           </span>
-          <span className="relative">
-            <AinaAvatar size={64} className="shadow-premium ring-[3px] ring-rera-gold-400 transition group-hover:-translate-y-0.5 group-hover:ring-rera-gold-300" />
-            <span className="absolute bottom-0.5 right-0.5 h-4 w-4 rounded-full border-2 border-white bg-rera-emerald-500 dark:border-rera-navy-900" aria-hidden />
+          <span className="relative animate-aina-float">
+            {/* Halos dorés qui s'élargissent : invitation discrète à cliquer */}
+            <span className="pointer-events-none absolute inset-0 animate-aina-halo rounded-full bg-rera-gold-400/50" aria-hidden />
+            <span className="pointer-events-none absolute inset-0 animate-aina-halo-delayed rounded-full bg-rera-gold-400/40" aria-hidden />
+            <AinaAvatar
+              size={64}
+              className="shadow-premium ring-[3px] ring-rera-gold-400 transition-transform duration-300 group-hover:scale-110 group-hover:ring-rera-gold-300"
+            />
+            <span className="absolute bottom-0.5 right-0.5 flex h-4 w-4" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rera-emerald-400 opacity-60" />
+              <span className="relative inline-flex h-4 w-4 rounded-full border-2 border-white bg-rera-emerald-500 dark:border-rera-navy-900" />
+            </span>
           </span>
         </button>
       ) : null}
@@ -342,9 +351,20 @@ export function AssistantWidget({ locale, contact }: { locale: AppLocale; contac
             })()}
 
             {status === "submitted" ? (
-              <p className="flex items-center gap-1.5 text-xs text-rera-navy-400 dark:text-rera-mist/60">
-                <Loader2 className="h-3 w-3 animate-spin" /> {fr ? "L'assistant réfléchit…" : "The assistant is thinking…"}
-              </p>
+              <div className="flex items-center gap-2" role="status">
+                <AinaAvatar size={30} />
+                <span className="inline-flex items-center gap-1 rounded-2xl rounded-tl-sm bg-rera-mist px-3.5 py-3 dark:bg-white/5">
+                  <span className="sr-only">{fr ? `${ASSISTANT_NAME} écrit…` : `${ASSISTANT_NAME} is typing…`}</span>
+                  {[0, 150, 300].map((delay) => (
+                    <span
+                      key={delay}
+                      className="h-1.5 w-1.5 animate-bounce rounded-full bg-rera-navy-400 dark:bg-rera-mist/60"
+                      style={{ animationDelay: `${delay}ms` }}
+                      aria-hidden
+                    />
+                  ))}
+                </span>
+              </div>
             ) : null}
 
             {errorText ? (
